@@ -1,7 +1,8 @@
 # barter-lang
 ## Iteration 1
 Miminal valid program
-`func do_nothing ( int a , int b ) void 
+```
+func do_nothing ( int a , int b ) void 
 {
 }
 func main ( ) void 
@@ -11,7 +12,7 @@ func main ( ) void
    str str_val = 'value'
    bool flag = true 
 }
-`
+```
 Variables declaration is supported (int, str and bool). 4 basic operations for int expressions are supported: +, -, /, * 
 There is no actual preprocessor for now, so all those spaces are required.  
 Function declaration is supported, function call is not.
