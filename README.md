@@ -1,6 +1,6 @@
 # barter-lang
 ## Iteration 1
-Miminal valid program
+Minimal valid program
 ```
 func do_nothing ( int a , int b ) void 
 {

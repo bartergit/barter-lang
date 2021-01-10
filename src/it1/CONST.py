@@ -1,6 +1,6 @@
 types = ["str", "bool", "int"]
 operations = ["+", "-", "*", "/"]
-special = ["true", "false"]
+special = ["true", "false", "return", "void"]
 first_priority_operations = ["*", "/"]
 sec_priority_operations = ["+", "-"]
 # op -> var | (

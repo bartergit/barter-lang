@@ -1,6 +1,7 @@
 from CONST import types, special, operations
 from util import find, rfind
 
+
 def is_name(token):
     return type(token) == str and token[
         0].isalpha() and token not in types and token not in special and False not in map(
@@ -26,6 +27,8 @@ def is_bool(text):
 
 def is_int_expr(tokens):
     f = True
+    if len(tokens) == 0:
+        return False
     if tokens[0] in operations:
         cond = lambda x: x % 2 != 0
     else:
@@ -38,12 +41,12 @@ def is_int_expr(tokens):
         for ind in range(0, i1 - 1):
             token = tokens[ind]
             f = f and (is_name(token) or is_int(token) if cond(ind) else token in operations)
-        f = f and tokens[i1 - 1] in operations
         cond = lambda x: x % 2 == 0 if i2 % 2 == 0 else lambda x: x % 2 != 0
         for ind in range(i2 + 1, len(tokens)):
             token = tokens[ind]
             f = f and (is_name(token) or is_int(token) if cond(ind) else token in operations)
-        f = f and is_int_expr(tokens[i1 + 1:i2])
+            f = (is_int_expr(tokens[i1 + 1:i2]) and i1 == 0 or tokens[i1 - 1] in operations) or (
+                        is_name(tokens[i1 - 1]) and is_function_call_params(tokens[i1 + 1:i2])) and f
     else:
         raise Exception("( and ) mismatch")
     return f
@@ -73,6 +76,20 @@ def is_func(tokens):
     return f
 
 
+def is_function_call_params(tokens):
+    if len(tokens) == 0:
+        return True
+    i1 = 0
+    f = True
+    i2 = find(tokens, ",")
+    while i2 != -1:
+        f = f and is_int_expr(tokens[i1:i2]) or is_str_expr(tokens[i1:i2]) or is_bool_expr(tokens[i1:i2])
+        i1 = i2 + 1
+        i2 = find(tokens[i1:], ",")
+    f = f and is_int_expr(tokens[i1:]) or is_str_expr(tokens[i1:]) or is_bool_expr(tokens[i1:])
+    return f
+
+
 def is_dec(tokens):
     if len(tokens) < 4:
         return False
@@ -92,3 +109,5 @@ def is_open_bracket(tokens):
 def is_closed_bracket(tokens):
     return len(tokens) == 1 and tokens[0] == "}"
 
+def is_return(tokens):
+    return len(tokens) > 1 and tokens[0] == "return" and (is_int_expr(tokens[1:]) or is_str_expr(tokens[1:]) or is_bool_expr(tokens[1:]))

@@ -1,8 +1,8 @@
-from valid import is_func, is_dec, is_open_bracket, is_closed_bracket
+from valid import is_func, is_dec, is_open_bracket, is_closed_bracket, is_return
 
 
 def create_dec(tokens):
-    return {"name": tokens[1], "type": tokens[0], "expr": tokens[3:]}
+    return {"TAG": "DEC", "name": tokens[1], "type": tokens[0], "expr": tokens[3:]}
 
 
 def create_params(tokens):
@@ -13,23 +13,30 @@ def create_params(tokens):
 
 
 def create_func(tokens):
-    return {"name": tokens[1], "return_type": tokens[-1], "params": create_params(tokens[3:-2]), "body": []}
+    return {"TAG": "FUNC", "name": tokens[1], "return_type": tokens[-1], "params": create_params(tokens[3:-2]), "body": []}
+
+
+def create_return(tokens):
+    return {"TAG": "RETURN", "expr": tokens[1:]}
 
 
 def do_nothing(x):
     return x
 
 
-corresponding = {is_func: create_func, is_dec: create_dec}
-expr_order_valid = {is_func: [is_open_bracket], is_open_bracket: [is_closed_bracket, is_dec],
-                    is_dec: [is_closed_bracket, is_dec], is_closed_bracket: [is_func, "END"]}
+corresponding = {is_func: create_func, is_dec: create_dec, is_return: create_return}
+expr_order_valid = {is_func: [is_open_bracket], is_open_bracket: [is_closed_bracket, is_dec, is_return],
+                    is_dec: [is_closed_bracket, is_dec, is_return], is_closed_bracket: [is_func, "END"],
+                    is_return: [is_closed_bracket, is_dec, is_return]}
 
 
 # func = func name (type name,) type
 # func  -> {
-# {     -> } | dec
-# dec   -> } | dec
+# {     -> } | dec | is_return
+# dec   -> } | dec | is_return
+# is_return  -> } | dec | is_return
 # }     -> func | end
+
 
 
 def parse(program_text):
