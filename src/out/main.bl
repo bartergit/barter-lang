@@ -1,8 +1,8 @@
 func return_5()->int{
     return 5
 }
-func do_nothing()->int{
-    return 'str'
+func do_nothing()->void{
+    print('did nothing')
 }
 func return_self(int a) -> int {
     return a
@@ -16,7 +16,7 @@ func main()->void{
     int a = return_self(19)
     log(to_str(div(15,10)))
     log(to_str(sub(19, mult(2, div(15, 10)))))
-    int i1 = do_nothing()
+    //do_nothing()
     bool b = true
     bool b2 = false
     if or(false, true) {

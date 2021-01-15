@@ -123,6 +123,7 @@ def create_expr(line, variables, functions):
         type = expr["type"]
     return {"TAG": "EXPRESSION", "value": expr, "type": type}
 
+
 def create_if(line, variables, functions):
     line = line.strip()
     assert line[:2] == "if", line[:2]
@@ -130,6 +131,7 @@ def create_if(line, variables, functions):
     expr = create_expr(line[2:-1], variables, functions)
     assert expr["type"] == "bool"
     return {"TAG": "IF", "expr": expr, "if_true": []}
+
 
 create_of_type = {"RETURN": create_return, "DECLARATION": create_declaration, "ASSIGMENT": create_assigment,
                   "EXPRESSION": create_expr, "IF": create_if}
@@ -175,11 +177,14 @@ def create_program(program, variables, functions):
             if if_expr:
                 if_expr[-1]["if_true"].append(create_of_type[define_type(line)](line, variables, functions))
                 function["body"].pop(j)
-                j-=1
+                j -= 1
             else:
                 function["body"][j] = create_of_type[define_type(line)](line, variables, functions)
                 if define_type(line) == "IF":
                     if_expr.append(function["body"][j])
+                if define_type(line) == "RETURN":
+                    assert function["body"][j]["expr"]["type"] == function[
+                        "return_type"], f'{function["body"][j]["expr"]["type"]} != {function["return_type"]}'
                     # del function["body"][j]
             j += 1
     return functions

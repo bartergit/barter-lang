@@ -12,6 +12,13 @@ log:
   - type: str
     name: a
   body: []
+neg:
+  name: neg
+  return_type: void
+  args:
+  - type: str
+    name: a
+  body: []
 add:
   name: add
   return_type: int
@@ -136,17 +143,21 @@ return_5:
       type: int
 do_nothing:
   name: do_nothing
-  return_type: int
+  return_type: void
   args: []
   body:
-  - TAG: RETURN
-    expr:
-      TAG: EXPRESSION
-      value:
-        TAG: VALUE
-        expr: '''str'''
+  - TAG: EXPRESSION
+    value:
+      TAG: FUNCTION_CALL
+      function_name: print
+      args:
+      - TAG: EXPRESSION
+        value:
+          TAG: VALUE
+          expr: '''did nothing'''
+          type: str
         type: str
-      type: str
+    type: void
 return_self:
   name: return_self
   return_type: int
@@ -318,16 +329,6 @@ main:
             type: int
         type: str
     type: void
-  - TAG: DECLARATION
-    expr:
-      TAG: EXPRESSION
-      value:
-        TAG: FUNCTION_CALL
-        function_name: do_nothing
-        args: []
-      type: int
-    type: int
-    name: i1
   - TAG: DECLARATION
     expr:
       TAG: EXPRESSION

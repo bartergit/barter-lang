@@ -12,6 +12,13 @@ log:
   - type: str
     name: a
   body: []
+neg:
+  name: neg
+  return_type: void
+  args:
+  - type: str
+    name: a
+  body: []
 add:
   name: add
   return_type: int
@@ -231,6 +238,24 @@ fib:
     name: n
     TAG: VARIABLE
   body:
+  - TAG: EXPRESSION
+    value:
+      TAG: FUNCTION_CALL
+      function_name: print
+      args:
+      - TAG: EXPRESSION
+        value:
+          TAG: FUNCTION_CALL
+          function_name: to_str
+          args:
+          - TAG: EXPRESSION
+            value:
+              type: int
+              name: n
+              TAG: VARIABLE
+            type: int
+        type: str
+    type: void
   - TAG: IF
     expr:
       TAG: EXPRESSION
@@ -363,12 +388,36 @@ main:
           - TAG: EXPRESSION
             value:
               TAG: FUNCTION_CALL
+              function_name: factorial
+              args:
+              - TAG: EXPRESSION
+                value:
+                  TAG: VALUE
+                  expr: '5'
+                  type: int
+                type: int
+            type: int
+        type: str
+    type: void
+  - TAG: EXPRESSION
+    value:
+      TAG: FUNCTION_CALL
+      function_name: log
+      args:
+      - TAG: EXPRESSION
+        value:
+          TAG: FUNCTION_CALL
+          function_name: to_str
+          args:
+          - TAG: EXPRESSION
+            value:
+              TAG: FUNCTION_CALL
               function_name: fib
               args:
               - TAG: EXPRESSION
                 value:
                   TAG: VALUE
-                  expr: '30'
+                  expr: '12'
                   type: int
                 type: int
             type: int

@@ -5,6 +5,9 @@ Some example
 func return_5()->int{
     return 5
 }
+func do_nothing()->void{
+    print('did nothing')
+}
 func return_self(int a) -> int {
     return a
 }
@@ -12,11 +15,12 @@ func plus_one(int a) -> int {
     return add(a,1)
 }
 func main()->void{
-    str str1 = 'something'
+    str str1 = 'something' //only single-quoted supported!
     log(str1)
     int a = return_self(19)
     log(to_str(div(15,10)))
     log(to_str(sub(19, mult(2, div(15, 10)))))
+    //do_nothing()
     bool b = true
     bool b2 = false
     if or(false, true) {
@@ -54,6 +58,6 @@ func fib(int n) -> int {
 }
 func main() -> void {
     log(to_str(factorial(5)))
-    log(to_str(fib(30)))
+    log(to_str(fib(12))) // perfomance is pretty slow for now, for fib(30) for example
 }
 ```
