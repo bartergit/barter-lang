@@ -1,5 +1,5 @@
 import operator
-
+from help import find, minimal_but_not_negative
 
 class Tree:
     def __init__(self, val, left=None, right=None):
@@ -17,37 +17,6 @@ def print_tree(t, i=0):
         print(" " * i, t.val, sep="")
         print_tree(t.left, i + 1)
         print_tree(t.right, i + 1)
-
-
-def find(seq, el, start):
-    try:
-        return seq.index(el, start)
-    except ValueError:
-        return -1
-
-
-def minimal_but_not_negative(one, sec):
-    if one != -1 and sec != -1:
-        return min(one, sec)
-    else:
-        return max(one, sec)
-
-
-# def apply_unary(expr):
-#     if expr[0] == "+" or expr[0] == "-"
-#
-#
-# def parse_unary(t, parent=None, dir=None):
-#     if t.left is None and t.right is None:
-#         if dir == "left":
-#             parent.left = parse_first(t.val, "-", "-")
-#         elif dir == "right":
-#             parent.right = parse_first(t.val, "-", "-")
-#         else:
-#             return parse_first(t.val, "-", "-")
-#     else:
-#         parse_second(t.left, t, "left")
-#         parse_second(t.right, t, "right")
 
 def parse_sec(t, parent=None, dir=None):
     if t.left is None and t.right is None:

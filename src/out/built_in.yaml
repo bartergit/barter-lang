@@ -1,0 +1,130 @@
+print:
+  name: print
+  return_type: void
+  args:
+  - type: str
+    name: a
+  body: []
+log:
+  name: log
+  return_type: void
+  args:
+  - type: str
+    name: a
+  body: []
+neg:
+  name: neg
+  return_type: void
+  args:
+  - type: str
+    name: a
+  body: []
+add:
+  name: add
+  return_type: int
+  args:
+  - type: int
+    name: a
+  - type: int
+    name: b
+  body: []
+sub:
+  name: sub
+  return_type: int
+  args:
+  - type: int
+    name: a
+  - type: int
+    name: b
+  body: []
+mult:
+  name: mult
+  return_type: int
+  args:
+  - type: int
+    name: a
+  - type: int
+    name: b
+  body: []
+div:
+  name: div
+  return_type: int
+  args:
+  - type: int
+    name: a
+  - type: int
+    name: b
+  body: []
+concat:
+  name: concat
+  return_type: str
+  args:
+  - type: str
+    name: a
+  - type: str
+    name: b
+  body: []
+lt:
+  name: lt
+  return_type: bool
+  args:
+  - type: int
+    name: a
+  - type: int
+    name: b
+  body: []
+to_str:
+  name: to_str
+  return_type: str
+  args:
+  - type: int
+    name: a
+  body: []
+gt:
+  name: gt
+  return_type: bool
+  args:
+  - type: int
+    name: a
+  - type: int
+    name: b
+  body: []
+eq:
+  name: eq
+  return_type: bool
+  args:
+  - type: int
+    name: a
+  - type: int
+    name: b
+  body: []
+and:
+  name: and
+  return_type: bool
+  args:
+  - type: bool
+    name: a
+  - type: bool
+    name: b
+  body: []
+not:
+  name: not
+  return_type: bool
+  args:
+  - type: bool
+    name: a
+  body: []
+or:
+  name: or
+  return_type: bool
+  args:
+  - type: bool
+    name: a
+  - type: bool
+    name: b
+  body: []
+nothing:
+  name: nothing
+  return_type: int
+  args: []
+  body: []
