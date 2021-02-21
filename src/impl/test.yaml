@@ -1,0 +1,8 @@
+functions:
+  name: "main"
+  args:
+    - 4
+    - 3
+  body:
+    - 3
+    - 2

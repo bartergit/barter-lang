@@ -17,13 +17,3 @@ def save_as_yaml(to_save, filename):
     with open(filename, 'w') as file:
         documents = yaml.dump(to_save, file, sort_keys=False)
 
-
-def find(seq, el, start=0):
-    try:
-        return seq.index(el, start)
-    except ValueError:
-        return -1
-
-
-def minimal_but_not_negative(*args):
-    return min(filter(lambda x: x > 0, args))
