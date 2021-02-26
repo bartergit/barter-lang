@@ -53,7 +53,7 @@ def f(node):
         compare = f(node.children[0])
         assert compare[1] == "bool", "expected bool expression in while"
         return "while (%s) {\n%s}\n" % (compare[0], f(node.children[1]))
-    if node.name == "branch":
+    if node.name == "if":
         compare = f(node.children[0])
         assert compare[1] == "bool", "expected bool expression in if"
         assert node.children[1].name == "if_body"
@@ -64,6 +64,7 @@ def f(node):
         for child in node.children:
             out += f(child)
         return out
+    print(node)
 
 
 if __name__ == '__main__':
@@ -76,7 +77,7 @@ if __name__ == '__main__':
     ret_a = Node(variable('a'), parent=ret)
     v1 = Node(variable("b"), parent=comp)
     v2 = Node(constant(0), parent=comp)
-    branch = Node("branch", parent=body)
+    branch = Node("if", parent=body)
     # branch_condition = Node("condition", parent=branch)
     op = Node(bin_op(">"), parent=branch)
     if_body = Node("if_body", parent=branch)
