@@ -7,6 +7,9 @@ bin_op = namedtuple('bin_op', 'operator')
 constant = namedtuple('constant', 'value')
 assign = namedtuple('assign', 'name')
 declare = namedtuple('declare', 'type name')
+function_call = namedtuple('function_call', 'name')
+declare_func = namedtuple('declare_func', 'name type')
+# argument = namedtuple('argument', 'type name')
 
 def split(string, delimiter=None):
     if delimiter is None:
@@ -26,19 +29,29 @@ listing = """while b != 0 {
 return a"""
 
 operators = ["+", "-", "*", "/", "==", "!=", "<", ">", "<=", ">="]
-special = ["while", "for", "true", "false", "if"]
+types = ["int", "bool"]
+special = ["while", "for", "true", "false", "if", "func"] + types
 stack = []
 
 def is_correct_var_name(string):
-    return ["A" <= x <= "x" or x == "_" or x.isnumeric() for x in string[1:]].count(True) == len(string) - 1 \
-        and ("A" <= string[0] <= "x" or string[0] == "_") and string not in special
+    return ["A" <= x <= "z" or x == "_" or x.isnumeric() for x in string[1:]].count(True) == len(string) - 1 \
+        and ("A" <= string[0] <= "z" or string[0] == "_") and string not in special
 
 def parse_value(string, parent):
     if string.isnumeric() or string in ["true", "false"]:
         return Node(constant(string), parent = parent)
     if is_correct_var_name(string):
         return Node(variable(string), parent = parent)
-    raise Exception(f"syntax error in {string}")
+    if "(" in string and ")" in string:
+        func_name, args = split(string, "(")
+        assert args[-1] == ")", string
+        args = split(args[:-1], ",")
+        func_call = Node(function_call(func_name), parent = parent)
+        if args != [""]:
+            for arg in args:
+                parse_value(arg, func_call)
+        return func_call
+    raise Exception(f"syntax error in {string}", is_correct_var_name(string))
 
 
 def parse_expr(statement, parent):
@@ -53,19 +66,40 @@ def parse_expr(statement, parent):
     # raise Exception("syntax error", statement, operators, "-" in statement)
 
 
+def parse_func(string):
+    function_decl, arguments = split(string, "(")
+    func, function_name = split(function_decl, " ")
+    assert func == "func"
+    assert is_correct_var_name(function_name)
+    arguments, return_type = split(arguments, ")")
+    assert return_type[-1] == "{"
+    return_type = return_type[:-1].strip()
+    assert return_type in types or return_type == "void"
+    func_node = Node(declare_func(function_name, return_type), parent=stack[-1])
+    args_node = Node("arguments", parent=func_node)
+    arguments = split(arguments, ",")
+    arg_list = []
+    if arguments != [""]:
+        for arg in arguments:
+            typeof, arg_name = split(arg, " ")
+            assert typeof in types, typeof
+            Node(declare(typeof, arg_name), parent=args_node)
+    stack.append(Node("func_body", parent=func_node))
+    # functions[function_name] = {"arguments": arg_list, "return_type": return_type, "body":[]}
+    # return functions[function_name]
+
+
 def parse_while(string):
-    string = string.strip()
     assert string[:len("while")] == "while"
-    assert line[-1] == "{" 
-    statement = line[len("while"):-1].strip()
+    assert string[-1] == "{" 
+    statement = string[len("while"):-1].strip()
     while_statement = Node("while", parent=stack[-1])
-    while_body = Node("while_body", parent=stack[-1])
-    stack.append(while_body)
     parse_expr(statement, while_statement)
+    while_body = Node("while_body", parent=while_statement)
+    stack.append(while_body)
     
 
 def parse_if(string):
-    string = string.strip()
     assert string[:len("if")] == "if"
     assert string[-1] == "{" 
     statement = string[len("if"):-1].strip()
@@ -87,14 +121,16 @@ def parse_declaration(string):
     declare_node = Node(declare(typeof, var_name), parent=stack[-1])
     parse_expr(expr, declare_node)
 
-if __name__ == "__main__":
+def create_ast(listing):
     program = Node("program")
     stack.append(program)
     for line in split(listing, "\n"):
         line = line.strip()
         if line == "":
             continue
-        if "while" in line:
+        elif "func" in line:
+            parse_func(line)
+        elif "while" in line:
             parse_while(line)
         elif "if" in line:
             parse_if(line)
@@ -105,11 +141,21 @@ if __name__ == "__main__":
             assert s1 == "}" and s2 == "{"
             stack[-1] = Node("else_body", parent = stack[-1].parent)
         elif "return" in line:
-            pass
+            ret, expr = split(line, " ")
+            assert ret == "return"
+            ret_node = Node("return", parent = stack[-1])
+            parse_expr(expr, ret_node)
         elif line[:4] == "int "  or line[:5] == "bool ":
             parse_declaration(line)
         else:
-            parse_assign(line)
+            slitted = split(line, "=")
+            if is_correct_var_name(slitted[0]):
+                parse_assign(line)
+            else:
+                parse_value(line, stack[-1])
+    return program
+
+if __name__ == "__main__":   
     for pre, fill, node in RenderTree(program):
         print("%s%s" % (pre, node.name))
 
