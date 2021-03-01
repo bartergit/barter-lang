@@ -1,0 +1,1 @@
+ g++  -ggdb3 -O0 -pedantic-errors -Wall -Wextra   -fpie $(python3-config --cflags --embed) -o main   'main.cpp' $(python3-config --embed --ldflags)
