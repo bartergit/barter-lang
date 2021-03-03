@@ -1,0 +1,54 @@
+func sum(int x, int y) int {   
+    int res = x + y
+    return res
+}
+func max(int x, int y) int {
+    if x > y {
+        return x
+    }
+    return y
+}
+func fac(int x) int {
+    if x < 2 {
+        return 1
+    } else {
+        int arg = x - 1
+        int res = fac(arg)
+        res = res * x
+        return res
+    }
+}
+func fib(int x) int {
+    if x < 2 {
+        return 1
+    } else {
+        int arg = x - 1
+        int res = fib(arg)
+        arg = x - 2
+        int res2 = fib(arg)
+        res = res + res2
+        return res
+    }
+}
+func Euclidean_algorithm(int a, int b) int {
+    while b != 0 {
+        if a > b {
+            a = a - b
+        } else {
+            b = b - a
+        }
+    }
+    return a 
+}
+func main() void {
+    int res
+    res = Euclidean_algorithm(1071, 462)
+    //print(res)
+    res = max(res, 1)
+    print(res)
+    log(res)
+    //int res = fib(x)
+    //print(x)
+    //print(res)
+    //print(x)
+}

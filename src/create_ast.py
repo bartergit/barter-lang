@@ -115,17 +115,25 @@ def parse_assign(string):
     parse_expr(expr, assign_node)
 
 def parse_declaration(string):
-    first, expr = split(string, "=")
-    typeof, var_name = split(first, " ")
-    assert is_correct_var_name(var_name), f"variable name '{var_name}' is not correct"
-    declare_node = Node(declare(typeof, var_name), parent=stack[-1])
-    parse_expr(expr, declare_node)
+    if "=" in string:
+        first, expr = split(string, "=")
+        typeof, var_name = split(first, " ")
+        assert is_correct_var_name(var_name), f"variable name '{var_name}' is not correct"
+        declare_node = Node(declare(typeof, var_name), parent=stack[-1])
+        parse_expr(expr, declare_node)
+    else:
+        typeof, var_name = split(string, " ")
+        assert is_correct_var_name(var_name), f"variable name '{var_name}' is not correct"
+        declare_node = Node(declare(typeof, var_name), parent=stack[-1])
 
 def create_ast(listing):
     program = Node("program")
     stack.append(program)
     for line in split(listing, "\n"):
-        line = line.strip()
+        if "//" in line:
+            line, _ = split(line, "//")
+        else:
+            line = line.strip()
         if line == "":
             continue
         elif "func" in line:
@@ -155,9 +163,10 @@ def create_ast(listing):
                 parse_value(line, stack[-1])
     return program
 
-if __name__ == "__main__":   
-    for pre, fill, node in RenderTree(program):
-        print("%s%s" % (pre, node.name))
+if __name__ == "__main__": 
+    pass  
+    # for pre, fill, node in RenderTree(program):
+    #     print("%s%s" % (pre, node.name))
 
 
             
