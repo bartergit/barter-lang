@@ -1,0 +1,24 @@
+func main() void {
+
+    bool first = 1 < 2
+    bool second = 1 != 2
+    bool third = false
+    if first {
+        log(1)
+        if second {
+            log(2)
+            if third {
+                log(3)
+            } else {
+                if true {
+                    log(4)
+                } else {
+                    log(5)
+                }
+                if false {
+                    log(6)
+                }
+            }
+        }
+    }
+}

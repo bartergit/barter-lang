@@ -1,0 +1,14 @@
+func Euclidean_algorithm(int a, int b) int {
+    while b != 0 {
+        if a > b {
+            a = a - b
+        } else {
+            b = b - a
+        }
+    }
+    return a
+}
+func main() void {
+    int res = Euclidean_algorithm(1071, 462)
+    log(res)
+}

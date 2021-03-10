@@ -1,0 +1,14 @@
+func do_nothing() void {
+	int a = 3
+	return
+}
+
+func main() void {
+	int a = 5
+	int c
+	print(a)
+	do_nothing()
+	c = 6
+	print(a)
+	print(c)
+}

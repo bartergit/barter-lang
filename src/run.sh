@@ -1,0 +1,1 @@
+g++ test/$1.cpp -o build/$1.exe -fsanitize=undefined  && ./build/$1.exe

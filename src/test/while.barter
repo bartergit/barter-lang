@@ -1,0 +1,13 @@
+func main() void {
+    int i = 0
+    while i < 3 {
+        log(1)
+        i = i + 1
+    }
+    bool flag = true
+    while flag {
+        flag = false
+        log(2)
+    }
+    log(3)
+}

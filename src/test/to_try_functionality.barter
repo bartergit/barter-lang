@@ -2,6 +2,7 @@ func sum(int x, int y) int {
     int res = x + y
     return res
 }
+
 func max(int x, int y) int {
     if x > y {
         return x
@@ -40,8 +41,12 @@ func Euclidean_algorithm(int a, int b) int {
     }
     return a 
 }
+func do_nothing() void {
+    return
+}
 func main() void {
     int res
+    do_nothing()
     res = Euclidean_algorithm(1071, 462)
     //print(res)
     res = max(res, 1)

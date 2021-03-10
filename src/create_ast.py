@@ -17,18 +17,7 @@ def split(string, delimiter=None):
     else:
         return [x.strip() for x in string.split(delimiter)]
 
-listing = """while b != 0 {
-    if a > b {
-        int a = a - b
-    } else {
-        int b = b - a
-        int c = b + a
-        int f = true
-    }
-}
-return a"""
-
-operators = ["+", "-", "*", "/", "==", "!=", "<", ">", "<=", ">="]
+operators = ["<=",  ">=", "+", "-", "*", "/", "==", "!=", "<", ">"]
 types = ["int", "bool"]
 special = ["while", "for", "true", "false", "if", "func"] + types
 stack = []
@@ -116,7 +105,9 @@ def parse_assign(string):
 
 def parse_declaration(string):
     if "=" in string:
-        first, expr = split(string, "=")
+        ind = string.find("=")
+        first, expr = string[:ind].strip(), string[ind + 1:].strip()
+            # split(string, "=")
         typeof, var_name = split(first, " ")
         assert is_correct_var_name(var_name), f"variable name '{var_name}' is not correct"
         declare_node = Node(declare(typeof, var_name), parent=stack[-1])
@@ -129,44 +120,52 @@ def parse_declaration(string):
 def create_ast(listing):
     program = Node("program")
     stack.append(program)
-    for line in split(listing, "\n"):
-        if "//" in line:
-            line, _ = split(line, "//")
-        else:
-            line = line.strip()
-        if line == "":
-            continue
-        elif "func" in line:
-            parse_func(line)
-        elif "while" in line:
-            parse_while(line)
-        elif "if" in line:
-            parse_if(line)
-        elif line == "}":
-            stack.pop()
-        elif "else" in line:
-            s1,s2 = split(line, "else")
-            assert s1 == "}" and s2 == "{"
-            stack[-1] = Node("else_body", parent = stack[-1].parent)
-        elif "return" in line:
-            ret, expr = split(line, " ")
-            assert ret == "return"
-            ret_node = Node("return", parent = stack[-1])
-            parse_expr(expr, ret_node)
-        elif line[:4] == "int "  or line[:5] == "bool ":
-            parse_declaration(line)
-        else:
-            slitted = split(line, "=")
-            if is_correct_var_name(slitted[0]):
-                parse_assign(line)
+    try:
+        for line in split(listing, "\n"):
+            if "//" in line:
+                line, _ = split(line, "//")
             else:
-                parse_value(line, stack[-1])
+                line = line.strip()
+            if line == "":
+                continue
+            elif "func" in line:
+                parse_func(line)
+            elif "while" in line:
+                parse_while(line)
+            elif "if" in line:
+                parse_if(line)
+            elif line == "}":
+                stack.pop()
+            elif "else" in line:
+                s1,s2 = split(line, "else")
+                assert s1 == "}" and s2 == "{"
+                stack[-1] = Node("else_body", parent = stack[-1].parent)
+            elif line.startswith("return"):
+                if line == "return":
+                    Node("return", parent = stack[-1])
+                else:
+                    ret, expr = split(line, " ")
+                    assert ret == "return"
+                    ret_node = Node("return", parent = stack[-1])
+                    parse_expr(expr, ret_node)
+            elif line[:4] == "int "  or line[:5] == "bool ":
+                parse_declaration(line)
+            else:
+                slitted = split(line, "=")
+                if is_correct_var_name(slitted[0]):
+                    parse_assign(line)
+                else:
+                    parse_value(line, stack[-1])
+    except Exception as e:
+        print(e)
+        print(line)
     return program
 
-if __name__ == "__main__": 
-    pass  
-    # for pre, fill, node in RenderTree(program):
-    #     print("%s%s" % (pre, node.name))
+if __name__ == "__main__":
+    with open(f"test/while.barter", "r") as f:
+        program = create_ast(f.read())  
+        for pre, fill, node in RenderTree(program):
+            print("%s%s" % (pre, node.name))
 
 
             

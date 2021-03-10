@@ -10,6 +10,6 @@ func fib(int x) int {
     return res
 }
 func main() void {
-    int res = fib(5)
-    print(res)
+    int res = fib(20)
+    log(res)
 }
