@@ -5,72 +5,6 @@ bin_op = namedtuple('bin_op', 'sign')
 unary_op = namedtuple('unary_op', 'sign')
 operators = ["<=", ">=", "+", "-", "*", "/", "==", "!=", "<", ">", "!"]
 
-
-def do(expr):
-    array = []
-    numbers_1 = {}
-    numbers_2 = {}
-    for operator in operators:
-        i = -1
-        while True:
-            i = expr.find(operator, i + 1)
-            if i != -1:
-                array.append((operator, i))
-            else:
-                break
-    array.sort(key=lambda x: x[1])
-    j = 0
-    for op, i in array:
-        number = expr[j:i]
-        if number != '':
-            numbers_1[j] = number
-            numbers_2[i] = number
-        else:
-            pass
-        j = i + 1
-    # numbers.append((expr[j:], j, len(expr)))
-    print(expr)
-    print(array)
-    # print(numbers)
-    # print(numbers[4][0], expr[numbers[4][1]:numbers[4][2]])
-    print(numbers_1)
-    print(numbers_2)
-    print(array[1][0])
-    print(numbers_2[array[1][1]])
-    print(numbers_1[array[1][1] + len(array[1][0])])
-    # index = 1
-    # print(numbers[index], array[index][0], numbers[index + 1])
-
-
-def find(expr, ind):
-    i = expr.find("(", ind)
-    j = expr.find(")", ind)
-    if i < 0 or j < 0:
-        return max(i, j)
-    else:
-        return min(i, j)
-
-
-def find_brackets(expr):
-    ind = find(expr, 0)
-    start = ind
-    assert expr[ind] == "("
-    bracket_control = 1
-    while True:
-        ind = find(expr, ind + 1)
-        if ind == -1:
-            break
-        bracket = expr[ind]
-        if bracket == "(":
-            bracket_control += 1
-        elif bracket == ")":
-            bracket_control -= 1
-        if bracket_control == 0:
-            break
-    print(expr[start + 1:ind])
-    return ind
-
-
 def print_tree(t):
     for pre, fill, node in RenderTree(t):
         print("%s%s" % (pre, node.name))
@@ -153,8 +87,19 @@ def parse_expr(expr):
     expr_list = expr.split()
     return recursive_parse_expr(expr_list)
 
+def evaluate(tree):
+    if type(tree.name) == bin_op:
+        return f"({evaluate(tree.children[0])}) {tree.name.sign} ({evaluate(tree.children[1])})"
+    if type(tree.name) == unary_op:
+        return f"{tree.name.sign}({evaluate(tree.children[0])})"
+    return tree.name
+
 if __name__ == "__main__":
     # expr = "15--12+98/3*780<=32"
-    expr = "3*-(5-2)/(2+1)"
-    print_tree(parse_expr(expr))
+    expr = "3*-(5-2/(12+1))/(2+1)"
+    # expr = "-3*-3"
+    tree = parse_expr(expr)
+    print_tree(tree)
+    evaluated = evaluate(tree)
+    print(evaluated)
 
