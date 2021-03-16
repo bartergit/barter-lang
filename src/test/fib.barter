@@ -9,7 +9,8 @@ func fib(int x) int {
     int res = fib1 + fib2
     return res
 }
+func print(x
 func main() void {
-    int res = fib(20)
+    int res = fib(40)
     log(res)
 }

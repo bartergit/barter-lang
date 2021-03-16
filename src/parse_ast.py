@@ -29,7 +29,7 @@ builtin_functions = {
 }
 functions = {}
 operators = {"-": ["int", "int", "int"], "+": ["int", "int", "int"], "<": ["int", "int", "bool"],
-             ">": ["int", "int", "bool"], "<=": ["int", "int", "bool"],
+             ">": ["int", "int", "bool"],
              "!=": ["int", "int", "bool"], "*": ["int", "int", "int"], "==": ["int", "int", "bool"]}
 variables = {}
 ind = 0
@@ -37,7 +37,7 @@ lbl_counter = 0
 current_function_return_type = None
 
 
-def f(node, additional_index=None):
+def f(node):
     global ind
     global variables
     global lbl_counter
@@ -45,9 +45,7 @@ def f(node, additional_index=None):
         var_name = node.name.name
         assert var_name in variables, f"no such variable: {var_name}"
         i = len(variables) - variables[var_name]["ind"]
-        if additional_index:
-            i += additional_index
-        return f"get(stack_pointer - {i})", variables[var_name]["type"]
+        return f"get(stack_pointer - {len(variables) - i})", variables[var_name]["type"]
     if type(node.name) == declare:
         var_name, typeof = node.name.name, node.name.type
         assert var_name not in variables, f"{var_name} already exists"
@@ -91,9 +89,10 @@ def f(node, additional_index=None):
             args_node = functions[func_name].children[0].children
             assert len(args_node) == len(node.children)
             for i, child in enumerate(node.children):
-                val, typeof = f(child, i)
+                val, typeof = f(child)
                 assert args_node[i].name.type == typeof
                 args += f"push({val});\n"
+                ind += 1
             lbl_counter += 1
             return "%sstack_trace[++stack_trace_pointer] = &&$%s;\ngoto %s;\n$%s:\n" % \
                    (args, lbl_counter, func_name, lbl_counter), return_type
@@ -120,7 +119,7 @@ def f(node, additional_index=None):
         return "%s:\n%s" % \
                (node.name.name, f(node.children[1]))
     if node.name == "while":
-        assert len(node.children) == 2, node.children
+        assert len(node.children) == 2
         compare = f(node.children[0])
         assert compare[1] == "bool", "expected bool expression in while"
         lbl_counter += 1
@@ -181,7 +180,7 @@ def create_program(listing, name, run=True, print_tree=True):
     with open(f"build/{name}.cpp", "w") as file:
         file.write(out)
     if run:
-        os.system(f'g++ build/{name}.cpp -o build/{name}.exe')
+        os.system(f'g++ build/{name}.cpp -o build/{name}')
         os.system(rf".\\build\\{name}.exe")
 
 
