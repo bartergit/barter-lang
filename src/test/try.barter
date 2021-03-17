@@ -1,0 +1,9 @@
+func x(int n) int {
+    return n + 1
+}
+func f(int n) int {
+    return n*2
+}
+func main() void {
+
+}

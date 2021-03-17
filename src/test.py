@@ -1,5 +1,5 @@
 import datetime
-from parse_ast import create_program
+from parse_ast import build_and_run
 import sys
 from colorama import init, Fore, Style
 
@@ -31,7 +31,7 @@ def clear_log():
 
 
 def run_program(name):
-    create_program(get_file(name), name, True, False)
+    build_and_run(get_file(name), name, False)
 
 
 class Test:
@@ -78,7 +78,8 @@ if __name__ == "__main__":
     args = sys.argv
     if len(args) == 2:
         run_program(args[1])
-        get_log()
+        print("LOG:\n")
+        print(get_log())
     else:
         init()
         t = Test()

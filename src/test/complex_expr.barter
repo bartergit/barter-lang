@@ -1,0 +1,7 @@
+func sum(int a, int b) int {
+    return a + b
+}
+func main() void {
+    int res = -(8*(3+5))+1/1
+    print(res)
+}

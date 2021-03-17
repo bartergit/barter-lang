@@ -25,4 +25,4 @@ ofstream myfile;
 int main(){
 stack_trace[++stack_trace_pointer]=&&$0;
 myfile.open("build/log.txt");
-goto main;
+goto main0;

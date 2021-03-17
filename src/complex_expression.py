@@ -1,13 +1,7 @@
-from anytree import Node, RenderTree
-from collections import namedtuple
-
-bin_op = namedtuple('bin_op', 'sign')
-unary_op = namedtuple('unary_op', 'sign')
-operators = ["<=", ">=", "+", "-", "*", "/", "==", "!=", "<", ">", "!"]
-
-def print_tree(t):
-    for pre, fill, node in RenderTree(t):
-        print("%s%s" % (pre, node.name))
+from anytree import Node
+from util import *
+# constant, variable, unary_op, bin_op, function_call, operators, print_tree, is_correct_var_name, \
+#     parse_value
 
 
 def parse_unary(expr_list, ops):
@@ -52,11 +46,37 @@ def parse_binary(expr_list, operators):
     return out
 
 
-def parse_brackets(expr_list):
-    out = []
+def parse_comma_expr(expr_list, function_call_node):
+    # return_node = Node("func_call_arguments")
+    if not len(expr_list):
+        return #function_call_node
+    j = 0
+    expr_list.append(",")
     bracket_control = None
     for i, sym in enumerate(expr_list):
         if sym == "(":
+            if bracket_control:
+                bracket_control += 1
+            else:
+                bracket_control = 1
+        elif sym == ")":
+            bracket_control -= 1
+        elif sym == "," and (bracket_control == 0 or bracket_control is None):
+            recursive_parse_expr(expr_list[j:i]).parent = function_call_node
+            j = i + 1
+    # return return_node
+
+
+def parse_brackets(expr_list):
+    out = []
+    j = None
+    bracket_control = None
+    function_call_node = None
+    for i, sym in enumerate(expr_list):
+        if sym == "(":
+            if len(out) and is_correct_var_name(out[-1]):
+                function_call_node = Node(
+                    function_call(out.pop()))  # check if previous one is variable, then parse function
             if bracket_control:
                 bracket_control += 1
             else:
@@ -68,38 +88,63 @@ def parse_brackets(expr_list):
             out.append(sym)
         if bracket_control == 0:
             bracket_control = None
-            out.append(recursive_parse_expr(expr_list[j:i]))
+            if function_call_node:
+                out.append(function_call_node)
+                parse_comma_expr(expr_list[j:i], function_call_node)
+                function_call_node = None
+            else:
+                out.append(recursive_parse_expr(expr_list[j:i]))
     return out
 
 
 def recursive_parse_expr(expr_list):
+    if len(expr_list) == 1:
+        return Node(parse_value(expr_list[0]))
     expr_list = parse_brackets(expr_list)
     expr_list = parse_unary(expr_list, "+-")
-    for ops in ["*/", "+-", ["<=", ">=", "<", ">", "=="]]:
+    for ops in ["*/", "+-", ["<=", ">=", "<", ">", "==", "!="]]:
         expr_list = parse_binary(expr_list, ops)
     return expr_list[0]
 
+
+def finalize_parsing_expr(node, parent=None):
+    if type(node.name) == bin_op:
+        finalize_parsing_expr(node.children[0], node)
+        finalize_parsing_expr(node.children[1], node)
+    elif type(node.name) == unary_op:
+        finalize_parsing_expr(node.children[0], node)
+    elif type(node.name) in [function_call, variable, constant]:
+        pass
+    else:
+        node.name = parse_value(node.name)
+
+
+
 def parse_expr(expr):
-    for op in operators + ["(", ")"]:
+    for op in operators + ["(", ")", ","]:
         expr = expr.replace(op, f" {op} ")
     for op in ["< =", "> =", "! ="]:
         expr = expr.replace(op, op[0] + op[-1])
     expr_list = expr.split()
-    return recursive_parse_expr(expr_list)
+    node = recursive_parse_expr(expr_list)
+    finalize_parsing_expr(node)
+    return node
 
-def evaluate(tree):
-    if type(tree.name) == bin_op:
-        return f"({evaluate(tree.children[0])}) {tree.name.sign} ({evaluate(tree.children[1])})"
-    if type(tree.name) == unary_op:
-        return f"{tree.name.sign}({evaluate(tree.children[0])})"
-    return tree.name
+
+# def evaluate(tree):
+#     if type(tree.name) == bin_op:
+#         return f"({evaluate(tree.children[0])} {tree.name.sign} {evaluate(tree.children[1])})"
+#     if type(tree.name) == unary_op:
+#         return f"{tree.name.sign}({evaluate(tree.children[0])})"
+#     if type(tree.name) == constant:
+#         return tree.name.value
+#     return tree.name.name
+
 
 if __name__ == "__main__":
-    # expr = "15--12+98/3*780<=32"
-    expr = "3*-(5-2/(12+1))/(2+1)"
-    # expr = "-3*-3"
+    expr = "f(3,x(5)) + 3"
     tree = parse_expr(expr)
+    # print(tree)
     print_tree(tree)
-    evaluated = evaluate(tree)
-    print(evaluated)
-
+    # evaluated = evaluate(tree)
+    # print(evaluated)

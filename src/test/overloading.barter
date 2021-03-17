@@ -1,0 +1,14 @@
+func sum(int a, int b) int {
+    return a + b
+}
+func sum(int a, int b, int c) int {
+    return a + b + c
+}
+func main() void {
+    int res = sum(3,5)
+    print(res)
+    res = sum(3,5,9)
+    print(res)
+    bool flag = true
+    print(flag)
+}
