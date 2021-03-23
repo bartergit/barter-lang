@@ -1,4 +1,3 @@
-from anytree import Node, RenderTree
 from util import *
 
 from complex_expression import parse_expr as parse_complex_expr
@@ -28,8 +27,6 @@ def parse_func(string):
             assert typeof in types, typeof
             Node(var_declare(typeof, arg_name), parent=args_node)
     stack.append(Node("func_body", parent=func_node))
-    # functions[function_name] = {"arguments": arg_list, "return_type": return_type, "body":[]}
-    # return functions[function_name]
 
 
 def parse_while(string):

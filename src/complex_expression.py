@@ -131,20 +131,69 @@ def parse_expr(expr):
     return node
 
 
-# def evaluate(tree):
-#     if type(tree.name) == bin_op:
-#         return f"({evaluate(tree.children[0])} {tree.name.sign} {evaluate(tree.children[1])})"
-#     if type(tree.name) == unary_op:
-#         return f"{tree.name.sign}({evaluate(tree.children[0])})"
-#     if type(tree.name) == constant:
-#         return tree.name.value
-#     return tree.name.name
+def evaluate_to_register(tree, ind=0):
+    if type(tree.name) == bin_op:
+        first = tree.children[0]
+        sec = tree.children[1]
+        before = ""
+        after = ""
+        if type(first.name) in [bin_op, unary_op]:
+            before += evaluate_to_register(first)
+        else:
+            after += f"R0 = {evaluate_to_register(first)};\n"
+        if type(sec.name) in [bin_op, unary_op]:
+            before += evaluate_to_register(sec, 1)
+        else:
+            after += f"R1 = {evaluate_to_register(sec)};\n"
+        return before + after + f"R{ind} = R0 {tree.name.sign} R1;\n"
+    if type(tree.name) == unary_op:
+        first = tree.children[0]
+        before = ""
+        after = ""
+        if type(first.name) in [bin_op, unary_op]:
+            before += evaluate_to_register(first)
+        else:
+            after += f"R{ind} = {evaluate_to_register(first)};\n"
+        return before + after + f"R{ind} = {tree.name.sign} R{ind};\n"
+    if type(tree.name) == constant:
+        return tree.name.value
+    return tree.name.name
 
+
+def evaluate_to_stack(tree, ind=0):
+    if type(tree.name) == bin_op:
+        first = tree.children[0]
+        sec = tree.children[1]
+        before = ""
+        after = ""
+        if type(first.name) in [bin_op, unary_op]:
+            before += evaluate_to_stack(first)
+        else:
+            after += f"stack.append({evaluate_to_stack(first)});\n"
+        if type(sec.name) in [bin_op, unary_op]:
+            before += evaluate_to_stack(sec, 1)
+        else:
+            after += f"stack.append({evaluate_to_stack(sec)});\n"
+        return before + after + f"stack.append(stack.pop() {tree.name.sign} stack.pop());\n"
+    if type(tree.name) == unary_op:
+        first = tree.children[0]
+        before = ""
+        after = ""
+        if type(first.name) in [bin_op, unary_op]:
+            before += evaluate_to_stack(first)
+        else:
+            after += f"stack.append({evaluate_to_stack(first)});\n"
+        return before + after + f"stack.append({tree.name.sign}stack.pop());\n"
+    if type(tree.name) == constant:
+        return tree.name.value
+    return tree.name.name
 
 if __name__ == "__main__":
-    expr = "f(3,x(5)) + 3"
+    expr = "36/(3+5*(2+1))"
+    expr = "-3*-2"
+    expr = "-(8*(3+5))+1/1"
     tree = parse_expr(expr)
-    # print(tree)
     print_tree(tree)
-    # evaluated = evaluate(tree)
-    # print(evaluated)
+    s = evaluate_to_stack(tree)
+    print(s)
+    # print(out)
