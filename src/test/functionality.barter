@@ -1,4 +1,24 @@
-function('name',
-    body(2));
-function('name',
-    body(2))
+dec_func('do_some', 'int',
+    block(
+        set_arg('x', 'int')
+    ),
+    block(
+        ret(8)
+    )
+);
+dec_func('do_some2', 'int',
+    block(
+        set_arg('x', 'int')
+    ),
+    block(
+        ret(x)
+    )
+);
+dec_func('main', 'void',
+    block(),
+    block(
+        dec_var('x', 'int', 7),
+        dec_var('y', 'int', do_some2(11)),
+        cout(x,y)
+    )
+);

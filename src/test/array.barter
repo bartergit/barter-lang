@@ -1,8 +1,0 @@
-func do_nothing() void {
-	int a = 3
-	return
-}
-
-func main() void {
-    print(3)
-}

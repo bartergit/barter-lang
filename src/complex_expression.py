@@ -100,6 +100,7 @@ def recursive_parse_expr(expr_list):
     expr_list = parse_unary(expr_list, "+-")
     for ops in ["*/", "+-", ["<=", ">=", "<", ">", "==", "!="]]:
         expr_list = parse_binary(expr_list, ops)
+    assert len(expr_list)
     return expr_list[0]
 
 
