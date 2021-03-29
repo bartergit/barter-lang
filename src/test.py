@@ -65,7 +65,8 @@ class Test:
         for file, expected in [("log", ["3", "5", "8"]), ("fib", ["10946"]), ("euclidean_algorithm", ["21"]),
                                ("function_calls", ["7", "5", "10"]), ("if", ["1", "2", "4"]),
                                ("void", ["1", "3", "1", "1", "2", "3"]), ("basic", ["6", "12"]),
-                               ("while", ["1", "1", "1", "2", "3"])]:
+                               ("while", ["1", "1", "1", "2", "3"]), ("overloading", ["8", "17", "true"]),
+                               ("complex_expr", ["29", "-2", "24", "24", "-65"])]:
             self.before()
             run_program(file)
             self.equal(get_log(), expected, name=file)

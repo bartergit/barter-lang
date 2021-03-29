@@ -4,6 +4,7 @@ from collections import namedtuple
 signature = namedtuple('signature', 'return_type args implementation ind')
 expression = namedtuple('expression', 'value type')
 variable = namedtuple('variable', 'name')
+const_str = namedtuple('const_str', 'value')
 constant = namedtuple('constant', 'value')
 assign = namedtuple('assign', 'name')
 var_declare = namedtuple('declare', 'type name')
@@ -20,6 +21,8 @@ def is_correct_var_name(string):
            and ("A" <= string[0] <= "z" or string[0] == "_") and string not in special
 
 def parse_value(string):
+    if string[-1] == string[0] == "'":
+        return constant(string)
     if string.isnumeric() or string in ["true", "false"]:
         return constant(string)
     if is_correct_var_name(string):

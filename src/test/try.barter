@@ -5,5 +5,10 @@ func f(int n) int {
     return n*2
 }
 func main() void {
-
+    bool flag = true
+    bool false_flag = false
+    if flag {
+        print(flag)
+    }
+    print(false)
 }

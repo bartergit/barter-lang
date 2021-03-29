@@ -1,7 +1,5 @@
 from anytree import Node
 from util import *
-# constant, variable, unary_op, bin_op, function_call, operators, print_tree, is_correct_var_name, \
-#     parse_value
 
 
 def parse_unary(expr_list, ops):
@@ -47,9 +45,8 @@ def parse_binary(expr_list, operators):
 
 
 def parse_comma_expr(expr_list, function_call_node):
-    # return_node = Node("func_call_arguments")
     if not len(expr_list):
-        return #function_call_node
+        return  # function_call_node
     j = 0
     expr_list.append(",")
     bracket_control = None
@@ -64,7 +61,6 @@ def parse_comma_expr(expr_list, function_call_node):
         elif sym == "," and (bracket_control == 0 or bracket_control is None):
             recursive_parse_expr(expr_list[j:i]).parent = function_call_node
             j = i + 1
-    # return return_node
 
 
 def parse_brackets(expr_list):
@@ -107,17 +103,19 @@ def recursive_parse_expr(expr_list):
     return expr_list[0]
 
 
-def finalize_parsing_expr(node, parent=None):
+def finalize_parsing_expr(node):
     if type(node.name) == bin_op:
-        finalize_parsing_expr(node.children[0], node)
-        finalize_parsing_expr(node.children[1], node)
+        finalize_parsing_expr(node.children[0])
+        finalize_parsing_expr(node.children[1])
     elif type(node.name) == unary_op:
-        finalize_parsing_expr(node.children[0], node)
-    elif type(node.name) in [function_call, variable, constant]:
+        finalize_parsing_expr(node.children[0])
+    elif type(node.name) == function_call:
+        for child in node.children:
+            finalize_parsing_expr(child)
+    elif type(node.name) in [variable, constant]:
         pass
     else:
         node.name = parse_value(node.name)
-
 
 
 def parse_expr(expr):
@@ -160,20 +158,20 @@ def evaluate_to_register(tree, ind=0):
     return tree.name.name
 
 
-def evaluate_to_stack(tree, ind=0):
+def evaluate_to_stack(tree):
     if type(tree.name) == bin_op:
         first = tree.children[0]
         sec = tree.children[1]
         before = ""
         after = ""
+        if type(sec.name) in [bin_op, unary_op]:
+            before += evaluate_to_stack(sec)
+        else:
+            after += f"stack.append({evaluate_to_stack(sec)});\n"
         if type(first.name) in [bin_op, unary_op]:
             before += evaluate_to_stack(first)
         else:
             after += f"stack.append({evaluate_to_stack(first)});\n"
-        if type(sec.name) in [bin_op, unary_op]:
-            before += evaluate_to_stack(sec, 1)
-        else:
-            after += f"stack.append({evaluate_to_stack(sec)});\n"
         return before + after + f"stack.append(stack.pop() {tree.name.sign} stack.pop());\n"
     if type(tree.name) == unary_op:
         first = tree.children[0]
@@ -188,12 +186,15 @@ def evaluate_to_stack(tree, ind=0):
         return tree.name.value
     return tree.name.name
 
+
 if __name__ == "__main__":
     expr = "36/(3+5*(2+1))"
     expr = "-3*-2"
     expr = "-(8*(3+5))+1/1"
+    expr = "print(1+3+2, 5)"
     tree = parse_expr(expr)
     print_tree(tree)
-    s = evaluate_to_stack(tree)
-    print(s)
+    expr = "1+3+2"
+    tree = parse_expr(expr)
+    print_tree(tree)
     # print(out)

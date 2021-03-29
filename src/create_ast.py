@@ -76,7 +76,11 @@ def create_ast(listing):
     stack.append(program)
     for line in split(listing, "\n"):
         if "//" in line:
-            line, _ = split(line, "//")
+            splited_line = split(line, "//")
+            if len(splited_line) > 1:
+                line = splited_line[0]
+            else:
+                continue
         else:
             line = line.strip()
         if line == "":
@@ -117,7 +121,10 @@ def create_ast(listing):
 
 
 if __name__ == "__main__":
-    with open(f"test/void.barter", "r") as f:
-        program = create_ast(f.read())
-        for pre, fill, node in RenderTree(program):
+    with open(f"test/functionality.barter", "r") as f:
+        parent = Node("parent")
+        for line in f.read().split(";"):
+            program = parse_expr(line, parent)
+        # print(parent)
+        for pre, fill, node in RenderTree(parent):
             print("%s%s" % (pre, node.name))
