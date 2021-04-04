@@ -5,7 +5,7 @@ false = False
 
 
 def cout():
-    print(",".join(reversed([str(stack.pop()) for _ in range(stack.pop())])))
+    print(", ".join(reversed([str(stack.pop()) for _ in range(stack.pop())])))
 
 
 def sum():

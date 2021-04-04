@@ -1,6 +1,7 @@
 dec_func('do_some', 'int',
     block(
-        set_arg('x', 'int')
+        set_arg('x', 'int'),
+        set_arg('y', 'int')
     ),
     block(
         ret(8)
@@ -14,11 +15,9 @@ dec_func('do_some2', 'int',
         ret(x)
     )
 );
-dec_func('main', 'void',
+dec_func('main', 'void', //hello;
     block(),
     block(
-        dec_var('x', 'int', 7),
-        dec_var('y', 'int', do_some2(11)),
-        cout(x,y)
+        cout(3, 'hello world')
     )
 );

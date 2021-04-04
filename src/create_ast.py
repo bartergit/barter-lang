@@ -6,8 +6,10 @@ from complex_expression import parse_expr as parse_complex_expr
 def parse(program_name, to_print=True):
     with open(f"test/{program_name}.barter", "r") as f:
         parent = Node("program")
-        for line in f.read().split(";"):
-            line = line.strip()
+        lines = ""
+        for line in f.readlines():
+            lines += line.split("//")[0].strip()
+        for line in lines.split(";"):
             if line == "":
                 continue
             node = parse_complex_expr(line)

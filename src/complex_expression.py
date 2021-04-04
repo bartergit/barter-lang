@@ -118,13 +118,30 @@ def finalize_parsing_expr(node):
     else:
         node.name = parse_value(node.name)
 
+def split_with_tolerance(expr):
+    res = []
+    j = -1
+    while True:
+        i = expr.find("'", j + 1)
+        if i == -1:
+            break
+        res += expr[j+1:i].split()
+        j = expr.find("'", i + 1)
+        res.append(expr[i:j+1])
+    res += expr[j+1:].split()
+    return res
+
 
 def parse_expr(expr):
     for op in operators + ["(", ")", ","]:
         expr = expr.replace(op, f" {op} ")
     for op in ["< =", "> =", "! ="]:
         expr = expr.replace(op, op[0] + op[-1])
-    expr_list = expr.split()
+    # expr_list = expr.split()
+    expr_list = split_with_tolerance(expr)
+    # if "hello" in expr:
+    #     print(expr_list)
+    #     print(split_with_tolerance(expr))
     node = recursive_parse_expr(expr_list)
     finalize_parsing_expr(node)
     return node
@@ -187,8 +204,7 @@ def evaluate_to_stack(tree):
         return tree.name.value
     return tree.name.name
 
-
-if __name__ == "__main__":
+def main():
     expr = "36/(3+5*(2+1))"
     expr = "-3*-2"
     expr = "-(8*(3+5))+1/1"
@@ -198,4 +214,6 @@ if __name__ == "__main__":
     expr = "1+3+2"
     tree = parse_expr(expr)
     print_tree(tree)
-    # print(out)
+
+if __name__ == "__main__":
+    main()
