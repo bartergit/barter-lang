@@ -1,0 +1,12 @@
+dec_func('main', 'void',
+    block(),
+    block(
+        dec_arr('arr', 'int', 2),
+        dec_var('some', 'int', 5),
+        set_arr('arr', 1, 3),
+        set_arr('arr', 0, sum(index('arr',1),1)),
+        cout(index('arr',0)),
+        cout(index('arr',1)),
+        cout(some)
+    )
+);

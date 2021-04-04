@@ -5,6 +5,7 @@ import os
 
 class Global:
     variables = {}
+    arrays = {}
     functions = {}
     ind = 0
 
@@ -13,7 +14,7 @@ class Global:
         return f"stack.append({x}); stack.append({y}); sum(); "
 
     @staticmethod
-    def dif(x,y):
+    def dif(x, y):
         return f"stack.append({y}); stack.append({x}); dif(); "
 
     @staticmethod
@@ -49,6 +50,35 @@ class Global:
             return f"stack[top_pointer_stack[-1]+{ind}] = {value}; "
         raise Exception(f"{name}??")
 
+    # arrays
+    @staticmethod
+    def dec_arr(name, typeof, size):
+        if Global.arrays.get(name) is None:
+            assert typeof in types
+            Global.arrays[name] = dec_arr("arr " + typeof, Global.ind, int(size))
+            Global.ind += int(size)
+            return f"stack.append(0); " * int(size)
+        raise Exception(f"{name} is already declared")
+
+    @staticmethod
+    def index(name, pos_index):
+        if Global.arrays.get(name) is not None:
+            pos_index = int(pos_index)
+            assert 0 <= pos_index < Global.arrays[name].size, f"{name}[{pos_index}]??"
+            ind = Global.arrays[name].ind + pos_index
+            return f"stack.append(stack[top_pointer_stack[-1]+{ind}]); "
+        raise Exception(f"{name}??")
+
+    @staticmethod
+    def set_arr(name, pos_index, value):
+        if Global.arrays.get(name) is not None:
+            pos_index = int(pos_index)
+            assert 0 <= pos_index < Global.arrays[name].size
+            ind = Global.arrays[name].ind + pos_index
+            return f"stack[top_pointer_stack[-1]+{ind}] = {value}; "
+        raise Exception(f"{name}??")
+
+    # end of array
     @staticmethod
     def set_arg(name, typeof):
         Global.variables[name] = dec_var(typeof, Global.ind)
@@ -69,7 +99,7 @@ def do_block(node):
     for child in node.children:
         value, typeof = do(child)
         ret += value
-        if typeof == "expr int": # watch this!
+        if typeof == "expr int":  # watch this!
             ret += "stack.pop(); "
     return ret
 
@@ -120,9 +150,11 @@ def create_source(ast):
         function_name, return_type, args, body_block = child.children
         return_type = return_type.name.value
         function_name = function_name.name.value
-        assert type(child.name) == function_call and child.name.function_name == "dec_func"
+        assert type(
+            child.name) == function_call and child.name.function_name == "dec_func"
         assert return_type in types or return_type == "void", return_type
-        Global.functions[function_name] = signature(return_type, args, body_block)
+        Global.functions[function_name] = signature(
+            return_type, args, body_block)
     for child in ast.children:
         value, typeof = do(child)
         out += value
@@ -130,7 +162,7 @@ def create_source(ast):
 
 
 def build(filename, run):
-    ast = parse("functionality", not run)
+    ast = parse(filename, not run)
     res = create_source(ast)
     with open("template.py", "r") as template:
         listing = template.read() + res + "\nmain()"
@@ -140,9 +172,13 @@ def build(filename, run):
             f.write(listing)
 
 
-if __name__ == "__main__":
-    run = sys.argv[1] == "yes"
-    filename = "functionality"
+def main():
+    run = sys.argv[1] == "run"
+    filename = "array"
     build(filename, run)
     if run:
         os.system(f'py build/{filename}.py')
+
+
+if __name__ == "__main__":
+    main()
