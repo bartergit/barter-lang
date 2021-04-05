@@ -4,6 +4,7 @@
 + Restrict usage of system functions
 + Some tests
 + Change array behaviour (as for default variable)
++ Check return type
 
 ### done
 + Pop value when empty function_call

@@ -15,9 +15,33 @@ dec_func('do_some2', 'int',
         ret(x)
     )
 );
+dec_func('return_bool', 'bool',
+    block(),
+    block(
+        ret(true)
+    )
+);
+dec_func('do_void', 'void',
+    block(set_arg('x','int')),
+    block(
+        dec_var('y', 'bool', true),
+        cout('doing nothing really. and x is', x, y),
+        ret_void()
+    )
+);
 dec_func('main', 'void', //hello;
     block(),
     block(
-        cout(3, 'hello world')
+        dec_var('a', 'int', 3),
+        //dec_var('b', 'int', 1),
+        //dec_var('flag', 'bool', return_bool()),
+        //return_bool(),
+        do_void(0),
+        dec_var('b', 'int', 5),
+        do_void(1),
+        dec_var('c', 'int', 10),
+        cout(a, b, c)
+        //dec_var('flag2', 'bool', false),
+        //cout(a, b, flag, flag2, 'hello world')
     )
 );
