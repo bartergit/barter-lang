@@ -1,0 +1,22 @@
+dec_func('pass_ref', 'void',
+    block(
+        set_arg('a', 'int')
+    ),
+    block(
+       cout(deref(a)),
+       set_ref(a,6),
+       ret_void()
+    )
+);
+dec_func('main', 'void',
+    block(),
+    block(
+        dec_var('a', 'int', 2),
+        dec_ref('ref_to_a', 'int', 'a'),
+        dec_var('c', 'int', 6),
+        set_ref(ref_to_a, 5),
+        cout(deref(ref_to_a), a, c),
+        pass_ref(ref_to_a),
+        cout(ref_to_a, a)
+    )
+);

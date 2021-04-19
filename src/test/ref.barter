@@ -1,0 +1,12 @@
+dec_func('main', 'void',
+    block(),
+    block(
+        dec_var('a', 'int', 2),
+        dec_ref('ref_to_a', 'int', 'a')
+        //dec_var('a', 'int', 2),
+        //dec_var('b', 'bool', true),
+        //dec_ref('ref_to_a', 'int', 'a'),
+        //dec_ref('ref_to_b', 'bool', 'b'),
+        //cout(deref(ref_to_a))
+    )
+);

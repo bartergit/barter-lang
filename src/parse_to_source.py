@@ -1,114 +1,7 @@
 from create_ast import *
 import sys
 import os
-
-
-class Global:
-    variables = {}
-    arrays = {}
-    functions = {}
-    ind = 0
-    return_type = None
-
-    @staticmethod
-    def sum(x, y):
-        return f"stack.append({x}); stack.append({y}); sum(); "
-
-    @staticmethod
-    def dif(x, y):
-        return f"stack.append({y}); stack.append({x}); dif(); "
-
-    @staticmethod
-    def lt(x, y):
-        return f"stack.append({y}); stack.append({x}); lt(); "
-
-    @staticmethod
-    def cout(*args):
-        out = ""
-        for arg in args:
-            out += f"stack.append({arg}); "
-        return out + f"stack.append({len(args)}); cout(); "
-
-    @staticmethod
-    def cond(compare, block):
-        out = f"\nif {compare}: "
-        out += block
-        return out + "\n"
-
-    @staticmethod
-    def dec_var(name, typeof, value):
-        if Global.variables.get(name) is None:
-            assert typeof in types
-            Global.variables[name] = dec_var(typeof, Global.ind)
-            Global.ind += 1
-            return f"stack.append({value}); "
-        raise Exception(f"{name} is already declared")
-
-    @staticmethod
-    def set_var(name, value):
-        if Global.variables.get(name) is not None:
-            ind = Global.variables[name].ind
-            return f"stack[top_pointer_stack[-1]+{ind}] = {value}; "
-        raise Exception(f"{name}??")
-
-    # arrays
-    @staticmethod
-    def dec_arr(name, typeof, size):
-        if Global.arrays.get(name) is None:
-            assert typeof in types
-            Global.arrays[name] = dec_arr("arr " + typeof, Global.ind, int(size))
-            Global.ind += int(size)
-            return f"stack.append(0); " * int(size)
-        raise Exception(f"{name} is already declared")
-
-    @staticmethod
-    def index(name, pos_index):
-        if Global.arrays.get(name) is not None:
-            pos_index = int(pos_index)
-            assert 0 <= pos_index < Global.arrays[name].size, f"{name}[{pos_index}]??"
-            ind = Global.arrays[name].ind + pos_index
-            return f"stack.append(stack[top_pointer_stack[-1]+{ind}]); "
-        raise Exception(f"{name}??")
-
-    @staticmethod
-    def set_arr(name, pos_index, value):
-        if Global.arrays.get(name) is not None:
-            pos_index = int(pos_index)
-            assert 0 <= pos_index < Global.arrays[name].size
-            ind = Global.arrays[name].ind + pos_index
-            return f"stack[top_pointer_stack[-1]+{ind}] = {value}; "
-        raise Exception(f"{name}??")
-
-    # end of array
-    @staticmethod
-    def set_arg(name, typeof):
-        Global.variables[name] = dec_var(typeof, Global.ind)
-        Global.ind += 1
-        return ""
-
-    @staticmethod
-    def dec_func(name, _return_type, _args, body_block):
-        return f"\ndef {name}():\n    global stack; {body_block}\n"
-
-    @staticmethod
-    def ret_void():
-        return f"stack = Stack(stack[:top_pointer_stack.pop()]); return;\n"
-
-    @staticmethod
-    def ret(value):
-        return f"   stack[top_pointer_stack[-1]] = {value}; stack = Stack(stack[:top_pointer_stack.pop() + 1]); return;\n"
-
-    corresponding = {
-        "sum": signature("int", [expression(value='x', type='int'), expression(value='y', type='int')], sum),
-        "dif": signature("int", [expression(value='x', type='int'), expression(value='y', type='int')], dif),
-        "lt": signature("bool", [expression(value='x', type='int'), expression(value='y', type='int')], lt),
-        "dec_func": signature("system", [
-            expression(value='name', type='str'), expression(value='return_type', type='str'),
-            expression(value='args', type='block'), expression(value='body', type='block')], dec_func),
-        "set_arg": signature("system", [
-            expression(value='arg_name', type='str'), expression(value='arg_type', type='str')], set_arg)
-    }
-
+from global_def import Global
 
 def do_block(node, is_argument_block=False, return_type=None):
     ret = ""
@@ -158,10 +51,21 @@ def do_system_function(node):
         # elif expr.type == "block":  # ?
         #     args.append(expr.value)
         else:
-            args.append(f"'{expr.value}'" if func_name == "cout" and expr.type == "str" else expr.value)  # messy
+            args.append(expr.value)
+            # args.append(f"'{expr.value}'" if func_name == "cout" and expr.type == "str" else expr.value)  # messy
         if expected_args:
             assert expr.type == expected_args[ind].type, \
                 f"'{func_name}', arg '{expected_args[ind].value}', got {expr.type} instead of {expected_args[ind].type}"
+        if func_name == "index" and ind == 0:
+            # if args[0] in Global.arrays:
+            #     return_type = Global.arrays.get(args[0]).type
+            # else:
+            return_type = Global.variables.get(args[0]).type
+            if "arr" in return_type:
+                return_type = return_type.split(" ")[1]
+        if func_name == "dec_ref" and ind == 2:
+            got_type = Global.variables[args[2]].type
+            assert args[1] == got_type, f"expected {args[1]}, got {got_type} instead"
         if func_name == "dec_var" and ind == 2:
             assert args[1] in types, f"unknown type {args[1]}"
             assert expr.type == args[1], f"'{args[0]}', expected {args[1]}, got {expr.type} instead"
@@ -251,8 +155,8 @@ def build(filename, run):
 
 
 def main():
-    run = sys.argv[1] == "run"
-    filename = "functionality"
+    run = len(sys.argv) > 1 and sys.argv[1] == "run"
+    filename = "pass_ref"
     build(filename, run)
     if run:
         os.system(f'py build/{filename}.py')

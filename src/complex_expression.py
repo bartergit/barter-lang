@@ -118,6 +118,7 @@ def finalize_parsing_expr(node):
     else:
         node.name = parse_value(node.name)
 
+
 def split_with_tolerance(expr):
     res = []
     j = -1
@@ -125,10 +126,10 @@ def split_with_tolerance(expr):
         i = expr.find("'", j + 1)
         if i == -1:
             break
-        res += expr[j+1:i].split()
+        res += expr[j + 1:i].split()
         j = expr.find("'", i + 1)
-        res.append(expr[i:j+1])
-    res += expr[j+1:].split()
+        res.append(expr[i:j + 1])
+    res += expr[j + 1:].split()
     return res
 
 
@@ -204,6 +205,7 @@ def evaluate_to_stack(tree):
         return tree.name.value
     return tree.name.name
 
+
 def main():
     expr = "36/(3+5*(2+1))"
     expr = "-3*-2"
@@ -214,6 +216,7 @@ def main():
     expr = "1+3+2"
     tree = parse_expr(expr)
     print_tree(tree)
+
 
 if __name__ == "__main__":
     main()
