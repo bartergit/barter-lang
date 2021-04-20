@@ -10,6 +10,8 @@ class Global:
 
     @staticmethod
     def sum(x, y):
+        # x = f"stack[top_pointer_stack[-1]+{x}]"
+        # y = f"stack[top_pointer_stack[-1]+{y}]"
         return f"stack.append({x}); stack.append({y}); sum(); "
 
     @staticmethod
@@ -26,6 +28,14 @@ class Global:
         for arg in args:
             out += f"stack.append({arg}); "
         return out + f"stack.append({len(args)}); cout(); "
+
+
+    @staticmethod
+    def ncout(*args):
+        out = ""
+        for arg in args:
+            out += f"stack.append({arg}); "
+        return out + f"stack.append({len(args)}); ncout(); "
 
     @staticmethod
     def cond(compare, block):
@@ -52,19 +62,20 @@ class Global:
     # refs
 
     @staticmethod
-    def dec_ref(name, typeof, var_name):
+    def dec_ref(name, typeof, ref_name):
         if Global.variables.get(name) is None:
-            assert typeof in types
-            assert var_name in Global.variables
-            Global.variables[name] = dec_var('int', Global.ind)
-            Global.ind += 1
-            value = f"top_pointer_stack[-1] + {Global.variables[var_name].ind}"
-            return f"stack.append({value}); "
+            assert typeof == Global.variables[ref_name].type
+            assert ref_name in Global.variables
+            Global.variables[name] = dec_var(typeof, Global.variables[ref_name].ind)
+            return ""
+            # Global.ind += 1
+            # value = f"top_pointer_stack[-1] + {Global.variables[ref_name].ind}"
+            # return f"stack.append({value}); "
         raise Exception(f"{name} is already declared")
 
     @staticmethod
-    def deref(index):
-        return f"stack.append(stack[{index}]); "
+    def deref(ref_name):
+        return f"stack.append({Global.variables.get(ref_name).ind}); "
 
     @staticmethod
     def set_ref(index, value):
@@ -88,32 +99,28 @@ class Global:
         raise Exception(f"{name} is already declared")
 
     @staticmethod
-    def index(name, pos_index):
-        # if Global.arrays.get(name):
-        #     pos_index = int(pos_index)
-        #     assert 0 <= pos_index < Global.arrays[name].size, f"{name}[{pos_index}]??"
-        #     ind = Global.arrays[name].ind + pos_index
-        #     return f"stack.append(stack[top_pointer_stack[-1]+{ind}]); "
-        if Global.variables.get(name):
-            #pos_index = int(pos_index)
-            # assert 0 <= pos_index, f"{name}[{pos_index}]??"  # < Global.arrays[name].size, f"{name}[{pos_index}]??"
-            ind = f"{Global.variables[name].ind} + {pos_index}"
-            return f"stack.append(stack[top_pointer_stack[-1]+{ind}]); "
-        raise Exception(f"{name}??")
+    def index(name_ind, pos_index):
+        # if Global.variables.get(name):
+        #pos_index = int(pos_index)
+        # assert 0 <= pos_index, f"{name}[{pos_index}]??"  # < Global.arrays[name].size, f"{name}[{pos_index}]??"
+        value = f"stack[top_pointer_stack[-1]+{name_ind}+{pos_index}]"
+        return f"stack.append({value}); " #top_pointer_stack[-1]+{ind}
+        # raise Exception(f"{name}??")
 
     @staticmethod
-    def set_arr(name, pos_index, value):
-        if Global.variables.get(name) is not None:
-            pos_index = int(pos_index)
-            # assert 0 <= pos_index # < Global.v[name].size
-            ind = Global.variables[name].ind + pos_index
-            return f"stack[top_pointer_stack[-1]+{ind}] = {value}; "
+    def set_arr(name_ind, pos_index, value):
+        # print(name_ind, pos_index, value)
+        # if Global.variables.get(name) is not None:
+        pos_index = int(pos_index)
+        # assert 0 <= pos_index # < Global.v[name].size
+        ind = f"{name_ind} + {pos_index}"
+        return f"stack[top_pointer_stack[-1]+{ind}] = {value}; "
         # if Global.arrays.get(name) is not None:
         #     pos_index = int(pos_index)
         #     assert 0 <= pos_index < Global.arrays[name].size
         #     ind = Global.arrays[name].ind + pos_index
         #     return f"stack[top_pointer_stack[-1]+{ind}] = {value}; "
-        raise Exception(f"{name}??")
+        # raise Exception(f"{v}??")
 
     # end of array
     @staticmethod
@@ -145,11 +152,13 @@ class Global:
             expression(value='args', type='block'), expression(value='body', type='block')], dec_func),
         "set_arg": signature("system", [
             expression(value='arg_name', type='str'), expression(value='arg_type', type='str')], set_arg),
+        "set_arr": signature("system", [expression(value='arg_name', type='arr int'),
+            expression(value='index', type='int'), expression(value='value', type='int')], set_arr),
         "index": signature("system", [
-            expression(value='array_name', type='str'), expression(value='index', type='int')], index),
+            expression(value='array_name', type='arr int'), expression(value='index', type='int')], index),#???
         "dec_ref": signature("system", [
             expression(value='ref_name', type='str'), expression(value='ref_type', type='str'),
             expression(value='ref_to', type='str')], dec_ref),
-        "deref": signature("int", [
-            expression(value='ref', type='int')], deref)
+        "deref": signature("arr int", [
+            expression(value='ref', type='str')], deref)    # always returns int?
     }

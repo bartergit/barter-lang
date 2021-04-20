@@ -1,0 +1,26 @@
+dec_func('do', 'void',
+    block(),
+    block(
+        dec_arr('arr','int',3),
+        dec_var('some','int',52),
+        dec_var('some2','int',53),
+
+        set_arr(deref('arr'),0,some),
+        set_arr(deref('arr'),1,some2),
+        set_arr(deref('arr'),2,9),
+        ncout(index(deref('arr'),0), index(deref('arr'),1), index(deref('arr'),2), sum(some, 5)),
+        ret_void()
+    )
+);
+dec_func('main', 'void',
+    block(),
+    block(
+        dec_var('some','int',59),
+        dec_arr('arr','int',3),
+        set_arr(deref('arr'),0,5),
+        set_arr(deref('arr'),1,7),
+        set_arr(deref('arr'),2,9),
+        ncout(index(deref('arr'),0), index(deref('arr'),1), index(deref('arr'),2), sum(some, 5)),
+        do()
+    )
+);

@@ -35,8 +35,12 @@ true = True
 false = False
 
 
-def cout():
+def ncout():
     print(" ".join(reversed([str(stack.pop()) for _ in range(stack.pop())])))
+
+
+def cout():
+    print(" ".join(reversed([str(stack.pop()) for _ in range(stack.pop())])), end=" ")
 
 
 def sum():

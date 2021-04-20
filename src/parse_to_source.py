@@ -60,7 +60,7 @@ def do_system_function(node):
             # if args[0] in Global.arrays:
             #     return_type = Global.arrays.get(args[0]).type
             # else:
-            return_type = Global.variables.get(args[0]).type
+            return_type = Global.variables.get(args[0]).type if args[0] in Global.variables else "int" # change this
             if "arr" in return_type:
                 return_type = return_type.split(" ")[1]
         if func_name == "dec_ref" and ind == 2:
@@ -121,6 +121,7 @@ def do(node):
         return expression(node.name.value, node.name.type)
     if type(node.name) == variable:
         var = Global.variables[node.name.name]
+        # return expression(var.ind, var.type)
         return expression(f"stack[top_pointer_stack[-1]+{var.ind}]", var.type)
     raise Exception(node.name)
 
@@ -156,7 +157,7 @@ def build(filename, run):
 
 def main():
     run = len(sys.argv) > 1 and sys.argv[1] == "run"
-    filename = "pass_ref"
+    filename = "ref_to_array"
     build(filename, run)
     if run:
         os.system(f'py build/{filename}.py')
