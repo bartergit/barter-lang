@@ -44,7 +44,7 @@ def do_system_function(node):
         if func_name == "ret":
             assert expr.type == Global.return_type, \
                 f"function return type is {Global.return_type}, but returned {expr.type}"
-        if "expr" in expr.type:
+        if True or "expr" in expr.type:
             before += expr.value
             expr = expression(expr.value, expr.type[5:])  # convert 'expr type' to 'type'
             args.append("stack.pop()")
@@ -57,9 +57,9 @@ def do_system_function(node):
             # else:
             args.append(expr.value)
             # args.append(f"'{expr.value}'" if func_name == "cout" and expr.type == "str" else expr.value)  # messy
-        if expected_args:
-            assert expr.type == expected_args[ind].type, \
-                f"'{func_name}', arg '{expected_args[ind].value}', got {expr.type} instead of {expected_args[ind].type}"
+        # if expected_args:
+        #     assert expr.type == expected_args[ind].type, \
+        #         f"'{func_name}', arg '{expected_args[ind].value}', got {expr.type} instead of {expected_args[ind].type}"
         if func_name == "index" and ind == 0:
             # if args[0] in Global.arrays:
             #     return_type = Global.arrays.get(args[0]).type
@@ -115,14 +115,14 @@ def do_function_call(node):
 
 def do(node):
     if type(node.name) == function_call:
-        if node.name.function_name == "block":
-            return expression(do_block(node), "block")
+        # if node.name.function_name == "block":
+        #     return expression(do_block(node), "block")
         value, typeof = do_function_call(node)
-        if typeof != "system":
-            typeof = "expr " + typeof
+        # if typeof != "system":
+        #     typeof = "expr " + typeof
         return expression(value, typeof)
     if type(node.name) == constant:
-        return expression(node.name.value, node.name.type)
+        return expression(f"stack.append({node.name.value}); ", node.name.type)
     if type(node.name) == variable:
         var = Global.variables[node.name.name]
         # return expression(var.ind, var.type)

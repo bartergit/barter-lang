@@ -45,7 +45,7 @@ class Global:
     def dec_var(name, typeof, value):
         if Global.variables.get(name) is None:
             assert typeof in types
-            Global.variables[name] = dec_var(typeof, Global.ind)
+            Global.variables[name] = indexed_var(typeof, Global.ind)
             Global.ind += 1
             return f"stack.append({value}); "
         raise Exception(f"{name} is already declared")
@@ -64,7 +64,7 @@ class Global:
         if Global.variables.get(name) is None:
             assert typeof == Global.variables[ref_name].type
             assert ref_name in Global.variables
-            Global.variables[name] = dec_var(typeof, Global.variables[ref_name].ind)
+            Global.variables[name] = indexed_var(typeof, Global.variables[ref_name].ind)
             return ""
             # Global.ind += 1
             # value = f"top_pointer_stack[-1] + {Global.variables[ref_name].ind}"
@@ -126,7 +126,7 @@ class Global:
     def set_arg(name, typeof):
         assert 'arr' not in typeof, "you cant pass array by value, only as ref"
         assert typeof in types + ["ref"], f"'{typeof}' is not in types"
-        Global.variables[name] = dec_var(typeof, Global.ind)
+        Global.variables[name] = indexed_var(typeof, Global.ind)
         Global.ind += 1
         return ""
 
@@ -146,18 +146,18 @@ class Global:
         "sum": signature("int", [expression(value='x', type='int'), expression(value='y', type='int')], sum),
         "dif": signature("int", [expression(value='x', type='int'), expression(value='y', type='int')], dif),
         "lt": signature("bool", [expression(value='x', type='int'), expression(value='y', type='int')], lt),
-        "dec_func": signature("system", [
-            expression(value='name', type='str'), expression(value='return_type', type='str'),
-            expression(value='args', type='block'), expression(value='body', type='block')], dec_func),
-        "set_arg": signature("system", [
-            expression(value='arg_name', type='str'), expression(value='arg_type', type='str')], set_arg),
-        "set_arr": signature("system", [expression(value='arg_name', type='ref'),
-            expression(value='index', type='int'), expression(value='value', type='int')], set_arr),
-        "index": signature("system", [
-            expression(value='array_name', type='ref'), expression(value='index', type='int')], index),#???
-        "dec_ref": signature("system", [
-            expression(value='ref_name', type='str'), expression(value='ref_type', type='str'),
-            expression(value='ref_to', type='str')], dec_ref),
-        "deref": signature("ref", [
-            expression(value='ref', type='str')], deref)    # always returns int?
+        # "dec_func": signature("system", [
+        #     expression(value='name', type='str'), expression(value='return_type', type='str'),
+        #     expression(value='args', type='block'), expression(value='body', type='block')], dec_func),
+        # "set_arg": signature("system", [
+        #     expression(value='arg_name', type='str'), expression(value='arg_type', type='str')], set_arg),
+        # "set_arr": signature("system", [expression(value='arg_name', type='ref'),
+        #     expression(value='index', type='int'), expression(value='value', type='int')], set_arr),
+        # "index": signature("system", [
+        #     expression(value='array_name', type='ref'), expression(value='index', type='int')], index),#???
+        # "dec_ref": signature("system", [
+        #     expression(value='ref_name', type='str'), expression(value='ref_type', type='str'),
+        #     expression(value='ref_to', type='str')], dec_ref),
+        # "deref": signature("ref", [
+        #     expression(value='ref', type='str')], deref)    # always returns int?
     }

@@ -32,16 +32,7 @@ dec_func('do_void', 'void',
 dec_func('main', 'void', //hello;
     block(),
     block(
-        dec_var('a', 'int', 3),
-        //dec_var('b', 'int', 1),
-        //dec_var('flag', 'bool', return_bool()),
-        //return_bool(),
-        do_void(0),
-        dec_var('b', 'int', 5),
-        do_void(1),
-        dec_var('c', 'int', 10),
-        cout(a, b, c)
-        //dec_var('flag2', 'bool', false),
-        //cout(a, b, flag, flag2, 'hello world')
+        dec_var('a', 'int', sum(3,2)),
+        dec_var('a', 'bool', true)
     )
 );

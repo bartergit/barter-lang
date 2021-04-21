@@ -1,13 +1,17 @@
 from anytree import Node, RenderTree
 from collections import namedtuple
 
+variable_declaration = namedtuple('variable_declaration', 'type name')
+function_declaration = namedtuple('function_declaration', 'name return_type')
+assignment = namedtuple('assign', 'name')
+###
+###
 signature = namedtuple('signature', 'return_type args body')
 expression = namedtuple('expression', 'value type')
 variable = namedtuple('variable', 'name')
 const_str = namedtuple('const_str', 'value')
 constant = namedtuple('constant', 'type value')
-assign = namedtuple('assign', 'name')
-dec_var = namedtuple('dec_var', 'type ind')
+indexed_var = namedtuple('indexed_var', 'type ind')
 dec_arr = namedtuple('dec_var', 'type ind size')
 function_call = namedtuple('function_call', 'function_name')
 declare_func = namedtuple('declare_func', 'name type')
