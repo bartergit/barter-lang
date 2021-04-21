@@ -51,6 +51,10 @@ def do_system_function(node):
         # elif expr.type == "block":  # ?
         #     args.append(expr.value)
         else:
+            # if expr.type != "str":
+            #     before += f"stack.append({expr.value}); "
+            #     args.append("stack.pop()")
+            # else:
             args.append(expr.value)
             # args.append(f"'{expr.value}'" if func_name == "cout" and expr.type == "str" else expr.value)  # messy
         if expected_args:
@@ -96,7 +100,7 @@ def do_declared_function(node):
         expected_arg = Global.functions[func_name].args[ind]
         assert expr.type == expected_arg.type, \
             f"'{func_name}', arg '{expected_arg.value}', got {expr.type} instead of {expected_arg.type}"
-    for arg in args:
+    for arg in reversed(args):
         before += f"stack.append({arg}); "
     before += f"top_pointer_stack.append(len(stack)-{len(node.children)}); "
     return expression(before + f"{node.name.function_name}(); ", Global.functions[func_name].return_type)

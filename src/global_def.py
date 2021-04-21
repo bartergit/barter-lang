@@ -10,8 +10,6 @@ class Global:
 
     @staticmethod
     def sum(x, y):
-        # x = f"stack[top_pointer_stack[-1]+{x}]"
-        # y = f"stack[top_pointer_stack[-1]+{y}]"
         return f"stack.append({x}); stack.append({y}); sum(); "
 
     @staticmethod
@@ -103,7 +101,8 @@ class Global:
         # if Global.variables.get(name):
         #pos_index = int(pos_index)
         # assert 0 <= pos_index, f"{name}[{pos_index}]??"  # < Global.arrays[name].size, f"{name}[{pos_index}]??"
-        value = f"stack[top_pointer_stack[-1]+{name_ind}+{pos_index}]"
+        # value = f"stack[top_pointer_stack[-1]+{name_ind}+{pos_index}]"
+        value = f"stack[{name_ind}+{pos_index}]"
         return f"stack.append({value}); " #top_pointer_stack[-1]+{ind}
         # raise Exception(f"{name}??")
 
@@ -111,10 +110,10 @@ class Global:
     def set_arr(name_ind, pos_index, value):
         # print(name_ind, pos_index, value)
         # if Global.variables.get(name) is not None:
-        pos_index = int(pos_index)
+        # pos_index = int(pos_index)
         # assert 0 <= pos_index # < Global.v[name].size
         ind = f"{name_ind} + {pos_index}"
-        return f"stack[top_pointer_stack[-1]+{ind}] = {value}; "
+        return f"stack[{ind}] = {value}; "
         # if Global.arrays.get(name) is not None:
         #     pos_index = int(pos_index)
         #     assert 0 <= pos_index < Global.arrays[name].size
@@ -126,7 +125,7 @@ class Global:
     @staticmethod
     def set_arg(name, typeof):
         assert 'arr' not in typeof, "you cant pass array by value, only as ref"
-        assert typeof in types, f"'{typeof}' is not in types"
+        assert typeof in types + ["ref"], f"'{typeof}' is not in types"
         Global.variables[name] = dec_var(typeof, Global.ind)
         Global.ind += 1
         return ""
@@ -152,13 +151,13 @@ class Global:
             expression(value='args', type='block'), expression(value='body', type='block')], dec_func),
         "set_arg": signature("system", [
             expression(value='arg_name', type='str'), expression(value='arg_type', type='str')], set_arg),
-        "set_arr": signature("system", [expression(value='arg_name', type='arr int'),
+        "set_arr": signature("system", [expression(value='arg_name', type='ref'),
             expression(value='index', type='int'), expression(value='value', type='int')], set_arr),
         "index": signature("system", [
-            expression(value='array_name', type='arr int'), expression(value='index', type='int')], index),#???
+            expression(value='array_name', type='ref'), expression(value='index', type='int')], index),#???
         "dec_ref": signature("system", [
             expression(value='ref_name', type='str'), expression(value='ref_type', type='str'),
             expression(value='ref_to', type='str')], dec_ref),
-        "deref": signature("arr int", [
+        "deref": signature("ref", [
             expression(value='ref', type='str')], deref)    # always returns int?
     }
