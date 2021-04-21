@@ -145,7 +145,10 @@ class Global:
     corresponding = {
         "sum": signature("int", [expression(value='x', type='int'), expression(value='y', type='int')], sum),
         "dif": signature("int", [expression(value='x', type='int'), expression(value='y', type='int')], dif),
+        "mul": signature("int", [expression(value='x', type='int'), expression(value='y', type='int')], lt),
+        "div": signature("int", [expression(value='x', type='int'), expression(value='y', type='int')], lt),
         "lt": signature("bool", [expression(value='x', type='int'), expression(value='y', type='int')], lt),
+        "cout": signature("void", [expression(value='x', type='int')], lt)
         # "dec_func": signature("system", [
         #     expression(value='name', type='str'), expression(value='return_type', type='str'),
         #     expression(value='args', type='block'), expression(value='body', type='block')], dec_func),
