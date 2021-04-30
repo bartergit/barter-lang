@@ -1,15 +1,62 @@
-function_call(function_name='dec_func')
-    ├── constant(type='str', value='main')
-    ├── constant(type='str', value='void')
-    ├── function_call(function_name='block')
-    └── function_call(function_name='block')
-        ├── function_call(function_name='dec_var')
-        │   ├── constant(type='str', value='a')
-        │   ├── constant(type='str', value='int')
-        │   └── function_call(function_name='sum')
-        │       ├── constant(type='int', value='3')
-        │       └── constant(type='int', value='2')
-        └── function_call(function_name='dec_var')
-            ├── constant(type='str', value='a')
-            ├── constant(type='str', value='bool')
-            └── constant(type='bool', value='true')
+program
+├── function_declaration(name='return_5', return_type='int')
+│   ├── arguments
+│   └── block
+│       └── return
+│           └── constant(type='int', value='5')
+├── function_declaration(name='inc', return_type='int')
+│   ├── arguments
+│   │   └── variable_declaration(type='int', name='x')
+│   └── block
+│       └── return
+│           └── function_call(function_name='sum')
+│               ├── variable(name='x')
+│               └── constant(type='int', value='1')
+├── function_declaration(name='cout_3', return_type='void')
+│   ├── arguments
+│   └── block
+│       ├── function_call(function_name='cout')
+│       │   └── constant(type='int', value='3')
+│       └── variable(name='return')
+├── function_declaration(name='cout_sum', return_type='int')
+│   ├── arguments
+│   │   ├── variable_declaration(type='int', name='x')
+│   │   └── variable_declaration(type='int', name='y')
+│   └── block
+│       ├── variable_declaration(type='int', name='res')
+│       │   └── function_call(function_name='sum')
+│       │       ├── variable(name='x')
+│       │       └── variable(name='y')
+│       ├── function_call(function_name='cout')
+│       │   └── variable(name='res')
+│       └── return
+│           └── variable(name='res')
+├── function_declaration(name='pass_ref', return_type='void')
+│   ├── arguments
+│   │   └── variable_declaration(type='int', name='x')
+│   └── block
+│       └── function_call(function_name='cout')
+│           └── variable(name='x')
+└── function_declaration(name='main', return_type='void')
+    ├── arguments
+    └── block
+        ├── variable_declaration(type='int', name='y')
+        │   └── constant(type='int', value='15')
+        ├── variable_declaration(type='int', name='arr')
+        │   └── function_call(function_name='dec_arr')
+        │       ├── variable(name='a')
+        │       └── constant(type='int', value='3')
+        ├── function_call(function_name='cout')
+        │   └── variable(name='arr')
+        ├── variable_declaration(type='int', name='x')
+        │   └── constant(type='int', value='9')
+        ├── function_call(function_name='cout')
+        │   └── function_call(function_name='deref')
+        │       └── function_call(function_name='dif')
+        │           ├── variable(name='arr')
+        │           └── constant(type='int', value='1')
+        └── function_call(function_name='cout')
+            └── function_call(function_name='deref')
+                └── function_call(function_name='sum')
+                    ├── variable(name='arr')
+                    └── constant(type='int', value='4')

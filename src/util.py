@@ -35,7 +35,7 @@ def parse_value(string):
         return constant("int", string)
     if is_correct_var_name(string):
         return variable(string)
-    raise Exception(f"syntax error in {string}", is_correct_var_name(string))
+    raise Exception(f"syntax error in {string}", string)
 
 def split(string, delimiter=None):
     if delimiter is None:

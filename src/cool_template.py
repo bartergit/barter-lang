@@ -1,5 +1,7 @@
 stack = []
 top_pointer_stack = [0]
+true = True
+false = False
 
 
 def dif():
