@@ -1,0 +1,51 @@
+func swap (int first int second) void {
+    int temp = deref(first)
+    set_ref(first,deref(second))
+    set_ref(second,temp)
+    return
+}
+func inc (int x) int {
+    return sum(x,1)
+}
+func print_array (int arr int size) void {
+    int i = 0
+    while lt(i,size) {
+        cout(deref(sum(arr,i)))
+        i = inc(i)
+    }
+    line()
+    return
+}
+func main () void {
+    int size = 4
+    int arr = dec_arr(a,4)
+    set_ref(sum(arr,0),16)
+    set_ref(sum(arr,1),189)
+    set_ref(sum(arr,2),1)
+    set_ref(sum(arr,3),19)
+    print_array(arr,size)
+    int i = 0
+    int j = 0
+    while lt(i,dif(size,1)) {
+        j = 0
+        while lt(j,dif(size,1)) {
+            if bt(deref(sum(arr,j)),deref(sum(arr,sum(j,1)))) {
+                swap(sum(arr,j),sum(arr,sum(j,1)))
+            }
+            j = inc(j)
+        }
+        i = inc(i)
+    }
+    print_array(arr,size)
+    return
+//    for (int i = 0; i < size - 1; i++) {
+//        for (int j = 0; j < size - i - 1; j++) {
+//            if (arr[j] > arr[j + 1]) {
+//                // меняем элементы местами
+//                temp = arr[j];
+//                arr[j] = arr[j + 1];
+//                arr[j + 1] = temp;
+//            }
+//        }
+//    }
+}

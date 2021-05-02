@@ -1,0 +1,16 @@
+func inc (int x) int {
+    return sum(x,1)
+}
+func main () void {
+    int i = 0
+    int j = 0
+    while lt(i,3) {
+        j = 0
+        while lt(j,4) {
+            cout(j)
+            j = inc(j)
+        }
+        i = inc(i)
+    }
+    return
+}

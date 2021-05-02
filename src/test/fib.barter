@@ -1,17 +1,10 @@
-dec_func('fib', 'int',
-    block(
-        set_arg('x', 'int')
-    ),
-    block(
-        cond(lt(x,2), block(
-            ret(1)
-        )),
-        ret(sum(fib(dif(x,1)),fib(dif(x,2))))
-    )
-);
-dec_func('main', 'void',
-    block(),
-    block(
-        cout(fib(8))
-    )
-);
+func fib (int x) int {
+    if lt(x,2) {
+        return 1
+    }
+    return sum(fib(dif(x,1)),fib(dif(x,2)))
+}
+func main () void {
+    cout(fib(20))
+    return
+}

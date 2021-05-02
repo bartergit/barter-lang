@@ -7,22 +7,22 @@ def create_variable_declaration(name, typeof, value):
         assert typeof in types, typeof
         Global.variables[name] = indexed_var(typeof, Global.ind)
         Global.ind += 1
-        return f"stack.append({value}); "
+        return f"push({value}); "
     raise Exception(f"{name} is already declared")
 
 
 def create_return(value):
-    return f"stack[top_pointer_stack[-1]] = {value}; stack = stack[:top_pointer_stack.pop() + 1]; return;"
+    return f"stack[last()] = {value}; stack_pointer = top_pointer_pop(); goto *stack_trace[stack_trace_pointer--];"
 
 
 def create_return_void():
-    return f"stack = stack[:top_pointer_stack.pop()]; return;\n"
+    return f"stack_pointer = top_pointer_pop(); goto *stack_trace[stack_trace_pointer--];\n"
 
 
 def create_assignment(name, value):
     if Global.variables.get(name):
         ind = Global.variables[name].ind
-        return f"stack[top_pointer_stack[-1]+{ind}] = {value}; "
+        return f"stack[last()+{ind}] = {value}; "
     raise Exception(f"{name}??")
 
 

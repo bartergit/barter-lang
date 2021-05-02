@@ -1,0 +1,8 @@
+func main () void {
+    cout(mod(10,19))
+    cout(lt(1,2)) //1
+    cout(lt(2,1)) //0
+    cout(lt(1,1)) //0
+    cout(dif(2,1)) // 1
+    cout(dif(1,2)) // -1
+}

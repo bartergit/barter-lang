@@ -1,0 +1,17 @@
+ func swap (int arr) void {
+    int temp = deref(arr)
+    set_ref(arr,deref(sum(arr,1)))
+    set_ref(sum(arr,1),temp)
+    return
+}
+func main () void {
+    int arr = dec_arr(a,2)
+    set_ref(arr,10)
+    set_ref(sum(arr,1),20)
+    cout(deref(arr))
+    cout(deref(sum(arr,1)))
+    swap(arr)
+    cout(deref(arr))
+    cout(deref(sum(arr,1)))
+    return
+}
