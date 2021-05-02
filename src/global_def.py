@@ -9,13 +9,13 @@ class Global:
     label = 1
     return_type = None
     corresponding = {
-        "sum": signature("int", [expression(value='x', type='int'), expression(value='y', type='int')], sum),
-        "dif": signature("int", [expression(value='x', type='int'), expression(value='y', type='int')], sum),
-        "mul": signature("int", [expression(value='x', type='int'), expression(value='y', type='int')], sum),
-        "div": signature("int", [expression(value='x', type='int'), expression(value='y', type='int')], sum),
-        "lt": signature("bool", [expression(value='x', type='int'), expression(value='y', type='int')], sum),
-        "eq": signature("bool", [expression(value='x', type='int'), expression(value='y', type='int')], sum),
-        "bt": signature("bool", [expression(value='x', type='int'), expression(value='y', type='int')], sum),
-        "mod": signature("int", [expression(value='x', type='int'), expression(value='y', type='int')], sum),
-        "cout": signature("void", [expression(value='x', type='int')], sum)
+        "sum": signature("int", [variable_declaration(name='x', type='int'), variable_declaration(name='y', type='int')], None),
+        "dif": signature("int", [variable_declaration(name='x', type='int'), variable_declaration(name='y', type='int')], None),
+        "mul": signature("int", [variable_declaration(name='x', type='int'), variable_declaration(name='y', type='int')], None),
+        "div": signature("int", [variable_declaration(name='x', type='int'), variable_declaration(name='y', type='int')], None),
+        "lt": signature("bool", [variable_declaration(name='x', type='int'), variable_declaration(name='y', type='int')], None),
+        "eq": signature("bool", [variable_declaration(name='x', type='int'), variable_declaration(name='y', type='int')], None),
+        "bt": signature("bool", [variable_declaration(name='x', type='int'), variable_declaration(name='y', type='int')], None),
+        "mod": signature("int", [variable_declaration(name='x', type='int'), variable_declaration(name='y', type='int')], None),
+        "cout": signature("void", [variable_declaration(name='x', type='int')], None)
     }

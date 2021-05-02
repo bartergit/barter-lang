@@ -1,9 +1,41 @@
-import os
-
-from brand_new_ast import parse_program
 from global_def import Global
 from util import *
-from system_functions import *
+
+
+def type_exception(name, expected, got):
+    return TypeError(f"in {name} expected '{expected}', got '{got}' instead")
+
+
+def create_variable_declaration(name, typeof, value):
+    if Global.variables.get(name) is None:
+        assert typeof in types, typeof
+        Global.variables[name] = indexed_var(typeof, Global.ind)
+        Global.ind += 1
+        return f"push({value}); "
+    raise Exception(f"{name} is already declared")
+
+
+def create_return(value):
+    return f"stack[last()] = {value}; stack_pointer = top_pointer_pop(); goto *stack_trace[stack_trace_pointer--];"
+
+
+def create_return_void():
+    return f"stack_pointer = top_pointer_pop(); goto *stack_trace[stack_trace_pointer--];\n"
+
+
+def create_assignment(name, value):
+    if Global.variables.get(name):
+        ind = Global.variables[name].ind
+        return f"stack[last()+{ind}] = {value}; "
+    raise Exception(f"{name}??")
+
+
+def set_args(function):
+    Global.variables = {}
+    Global.ind = 0
+    for arg in Global.functions[function].args:
+        Global.variables[arg.name] = indexed_var(arg.type, Global.ind)
+        Global.ind += 1
 
 
 def refer(node):
@@ -21,12 +53,11 @@ def declare_array(node):
     name = node.children[0].name.name
     size = expr.value
     if Global.variables.get(name) is None:
-        Global.variables[name] = variable_declaration("arr", Global.ind)
+        Global.variables[name] = variable_declaration("int", Global.ind)
         index = Global.ind
         Global.ind += int(size)
         return expression(bef + f"push(0); " * int(size) + f"push({index}+last()); ",
-                          'der')  # should be changed
-        # check behaviour on func
+                          'int')  # should be changed
     raise Exception(f"{name} is already declared")
 
 
@@ -36,8 +67,10 @@ def set_ref(node):
     return expression(bef_1 + bef_2 + f"stack[{expr_index.value}] = {expr_value.value};  push(0); ",
                       'system')  # unnecessary append
 
+
 def line(node):
     return expression("cout << '\\n';\n", "system")
+
 
 special_funcs = {"ref": refer, "deref": deref, "dec_arr": declare_array, "set_ref": set_ref, "line": line}
 
@@ -50,17 +83,20 @@ def do_function_call(node):
     args = []
     if func_name in Global.functions:
         return_type = Global.functions[func_name].return_type
+        expected_args = Global.functions[func_name].args
     else:
         return_type = Global.corresponding[func_name].return_type
+        expected_args = Global.corresponding[func_name].args
+    assert len(expected_args) == len(node.children), f"expected {len(expected_args)}, got {len(node.children)}"
     for ind, child in enumerate(node.children):
         bef, expr = do(child)
         before += bef
         args.append(expr)
+        expected_type = expected_args[ind].type
+        if expected_type != expr.type:
+            raise type_exception(f"function '{func_name}', {ind}th arg '{expected_args[ind].name}'", expected_type, expr.type)
         before += f"push({expr.value}); "
     if func_name in Global.functions:
-        # before += f"top_pointer_push(stack_pointer-{len(args)}); "
-        # if Global.functions[func_name].return_type != "void" and len(args) == 0:  # dont need this in c++
-        #     before += "push(0); "
         function_call_text = f"top_pointer_stack[++top_pointer] = stack_pointer - {len(node.children)} + 1;\n" \
                              f"stack_trace[++stack_trace_pointer] = &&${Global.label};\n" \
                              f"goto {func_name};\n" \
@@ -85,35 +121,51 @@ def do(node):
         return "", expression(f"stack[last()+{var.ind}]", var.type)
     raise Exception(node.name)
 
+
 def parse_body(node):
     res = ""
     for sub_function in node.children:
         if sub_function.name == "if":
             condition = sub_function.children[0]
             bef, value = do(condition)
+            if "bool" != value.type:
+                raise type_exception(f"condition", "bool", value.type)
             res += bef + "if (%s) {\n%s\n;\n}\n" % (value.value, parse_body(sub_function.children[1]))
         if sub_function.name == "while":
             condition = sub_function.children[0]
             label = Global.label
             Global.label += 1
             bef, value = do(condition)
+            if "bool" != value.type:
+                raise type_exception(f"loop", "bool", value.type)
             bef = f"${label}:\n" + bef
-            res += bef + "if (%s) {\n%s\n;\n goto $%s;\n}\n" % (value.value, parse_body(sub_function.children[1]), label)
+            res += bef + "if (%s) {\n%s\n;\n goto $%s;\n}\n" % (
+                value.value, parse_body(sub_function.children[1]), label)
         if type(sub_function.name) == variable_declaration:
             typeof, name = sub_function.name
             value = sub_function.children[0]
             bef, value = do(value)
+            if typeof != value.type:
+                raise type_exception(f"{name} variable declaration", typeof, value.type)
             res += bef + create_variable_declaration(name, typeof, value.value)
         if type(sub_function.name) == assignment:
+            name = sub_function.name.name
             value = sub_function.children[0]
             bef, value = do(value)
-            res += bef + create_assignment(sub_function.name.name, value.value)
+            expected_type = Global.variables.get(name).type
+            if expected_type != value.type:
+                raise type_exception(f"{name} assignment", expected_type, value.type)
+            res += bef + create_assignment(name, value.value)
         if sub_function.name == "return":
+            Global.have_return = True
             if len(sub_function.children):
                 value = sub_function.children[0]
                 bef, value = do(value)
+                if Global.return_type != value.type:
+                    raise type_exception("return", Global.return_type, value.type)
                 res += bef + create_return(value.value)
             else:
+                assert Global.return_type == "void"
                 res += create_return_void()
         if type(sub_function.name) == function_call:
             bef, value = do(sub_function)
@@ -124,8 +176,10 @@ def parse_body(node):
     res += "\n"
     return res
 
+
 def create_source(program):
-    res = ""
+    with open("template.cpp", "r") as template:
+        res = template.read()
     for function in program.children:
         function_name, return_type = function.name
         Global.functions[function_name] = signature(return_type, [x.name for x in function.children[0].children],
@@ -133,29 +187,10 @@ def create_source(program):
     for function in Global.functions:
         res += "\n%s:\n" % function
         set_args(function)
+        Global.have_return = False
+        Global.return_type = Global.functions[function].return_type
         res += parse_body(Global.functions[function].body)
+        assert Global.have_return, f"'{function}' should have explicit return"
         if function == "main":
             res += "$0:\nmyfile.close();\n}\n"
     return res
-
-
-def build(filename="bubble_sort"):
-    with open(f"test/{filename}.barter", "r") as listing:
-        listing_text = listing.read()
-    ast = parse_program(listing_text)
-    # print_tree(ast)
-    res = create_source(ast)
-    with open("template.cpp", "r") as template:
-        listing = template.read() + res
-    with open(f'build/{filename}.cpp', 'w') as f:
-        f.write(listing)
-    os.system(f'g++ build/{filename}.cpp -o build/{filename}.exe')
-    os.system(rf".\\build\\{filename}.exe")
-
-
-def main():
-    build()
-
-
-if __name__ == '__main__':
-    main()
