@@ -37,26 +37,48 @@ stack_trace[++stack_trace_pointer]=&&$0;
 top_pointer_stack[0] = 0;
 myfile.open("build/log.txt"); // for debugging
 goto main;
-sum:
+_sum:
 push(pop() + pop());
 goto *stack_trace[stack_trace_pointer--];
-eq:
+_mul:
+push(pop() * pop());
+goto *stack_trace[stack_trace_pointer--];
+_eq:
 push(pop() == pop());
 goto *stack_trace[stack_trace_pointer--];
-mod:
+_mod:
 stack[stack_pointer - 1] = stack[stack_pointer-1] % stack[stack_pointer];
 stack_pointer--;
 goto *stack_trace[stack_trace_pointer--];
-dif:
+_dif:
 stack[stack_pointer - 1] = stack[stack_pointer-1]-stack[stack_pointer];
 stack_pointer--;
 goto *stack_trace[stack_trace_pointer--];
-lt:
+_div:
+stack[stack_pointer - 1] = int(stack[stack_pointer-1]/stack[stack_pointer]);
+stack_pointer--;
+goto *stack_trace[stack_trace_pointer--];
+_lt:
 push(pop() > pop());
 goto *stack_trace[stack_trace_pointer--];
-bt:
+_bt:
 push(pop() < pop());
 goto *stack_trace[stack_trace_pointer--];
-cout:
-cout << pop() << ", ";
+_le:
+push(pop() >= pop());
+goto *stack_trace[stack_trace_pointer--];
+_be:
+push(pop() <= pop());
+goto *stack_trace[stack_trace_pointer--];
+_ne:
+push(pop() == pop());
+goto *stack_trace[stack_trace_pointer--];
+_not:
+push(!pop());
+goto *stack_trace[stack_trace_pointer--];
+_and:
+push(pop() && pop());
+goto *stack_trace[stack_trace_pointer--];
+_or:
+push(pop() || pop());
 goto *stack_trace[stack_trace_pointer--];

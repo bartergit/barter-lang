@@ -1,8 +1,40 @@
+func do_some (int x int y int z int a int b) int {
+    cout(x,y,z,a,b)
+    return mul(dif(x,y),z)
+}
 func main () void {
+    cout(dif(3,2))
+    do_some(11,div(15,5),5,div(0,15),18)
+    cout(11,div(15,5),5,div(0,15),18)
+    cout(1,2)
+    cout(not(true),not(false))
+    int x = 15
+    cout(1,x,18)
+    cout(11,div(15,5),5,div(0,15),18)
     cout(mod(10,19))
-    cout(lt(1,2)) //1
-    cout(lt(2,1)) //0
-    cout(lt(1,1)) //0
+    cout(lt(1,2))
+    cout(lt(1,2),lt(2,1),lt(1,1))
     cout(dif(2,1)) // 1
     cout(dif(1,2)) // -1
+    cout(sum(3,2))
+    cout(dif(3,2))
+    cout(mul(3,2))
+    cout(div(3,2))
+    cout(lt(3,2))
+    cout(eq(3,2))
+    cout(eq(3,3))
+    cout(bt(3,2))
+    cout(mod(3,2))
+    cout(le(3,2))
+    cout(ne(3,2))
+    cout(ne(3,3))
+    cout(be(3,2))
+    cout(and(true,true))
+    cout(and(true,false))
+    cout(and(false,false))
+    cout(or(true,false))
+    cout(or(true,true))
+    cout(15,19,20)
+    cout(sum(1,2),sum(2,2))
+    return
 }

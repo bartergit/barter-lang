@@ -44,3 +44,6 @@ def split(string, delimiter=None):
 def print_tree(t):
     for pre, fill, node in RenderTree(t):
         print("%s%s" % (pre, node.name))
+
+def booled(x):
+    return f'({x}? "true" : "false")'

@@ -65,14 +65,25 @@ def set_ref(node):
     bef_1, expr_index = do(node.children[0])
     bef_2, expr_value = do(node.children[1])
     return expression(bef_1 + bef_2 + f"stack[{expr_index.value}] = {expr_value.value};  push(0); ",
-                      'system')  # unnecessary append
+                      'void')  # unnecessary append
 
 
 def line(node):
     return expression("cout << '\\n';\n", "system")
 
 
-special_funcs = {"ref": refer, "deref": deref, "dec_arr": declare_array, "set_ref": set_ref, "line": line}
+def cout(node):
+    bef = ""
+    for child in node.children:
+        before, expr = do(child)
+        bef += before
+        value = expr.value if expr.type == "int" else booled(expr.value)
+        bef += f"cout << {value} << ' ';\n"
+    bef += "cout << '\\n';\n"
+    return expression(bef, "void")
+
+
+special_funcs = {"ref": refer, "deref": deref, "dec_arr": declare_array, "set_ref": set_ref, "line": line, "cout": cout}
 
 
 def do_function_call(node):
@@ -94,7 +105,8 @@ def do_function_call(node):
         args.append(expr)
         expected_type = expected_args[ind].type
         if expected_type != expr.type:
-            raise type_exception(f"function '{func_name}', {ind}th arg '{expected_args[ind].name}'", expected_type, expr.type)
+            raise type_exception(f"function '{func_name}', {ind}th arg '{expected_args[ind].name}'", expected_type,
+                                 expr.type)
         before += f"push({expr.value}); "
     if func_name in Global.functions:
         function_call_text = f"top_pointer_stack[++top_pointer] = stack_pointer - {len(node.children)} + 1;\n" \
@@ -103,7 +115,7 @@ def do_function_call(node):
                              f"${Global.label}:\n"
     else:
         function_call_text = f"stack_trace[++stack_trace_pointer] = &&${Global.label};\n" \
-                             f"goto {func_name};\n" \
+                             f"goto _{func_name};\n" \
                              f"${Global.label}:\n"
     Global.label += 1
     return expression(before + function_call_text, return_type)
