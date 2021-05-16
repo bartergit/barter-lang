@@ -13,12 +13,12 @@ func print_array (int arr int size) void {
         cout(deref(sum(arr,i)))
         i = inc(i)
     }
-    line()
     return
 }
 func main () void {
     int size = 4
-    int arr = dec_arr(a,4)
+    int arr = dec_arr(4)
+    int v = 13
     set_ref(sum(arr,0),16)
     set_ref(sum(arr,1),189)
     set_ref(sum(arr,2),1)
@@ -38,14 +38,4 @@ func main () void {
     }
     print_array(arr,4)
     return
-//    for (int i = 0; i < size - 1; i++) {
-//        for (int j = 0; j < size - i - 1; j++) {
-//            if (arr[j] > arr[j + 1]) {
-//                // меняем элементы местами
-//                temp = arr[j];
-//                arr[j] = arr[j + 1];
-//                arr[j + 1] = temp;
-//            }
-//        }
-//    }
 }

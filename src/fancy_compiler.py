@@ -1,6 +1,7 @@
 from global_def import Global
 from util import *
-
+import os
+import sys
 
 def type_exception(name, expected, got):
     return TypeError(f"in {name} expected '{expected}', got '{got}' instead")
@@ -49,16 +50,10 @@ def deref(node):
 
 
 def declare_array(node):
-    bef, expr = do(node.children[1])
-    name = node.children[0].name.name
-    size = expr.value
-    if Global.variables.get(name) is None:
-        Global.variables[name] = variable_declaration("int", Global.ind)
-        index = Global.ind
-        Global.ind += int(size)
-        return expression(bef + f"push(0); " * int(size) + f"push({index}+last()); ",
-                          'int')  # should be changed
-    raise Exception(f"{name} is already declared")
+    size = do(node.children[0])[1].value
+    index = Global.ind
+    Global.ind += int(size)
+    return expression(f"push(0); " * int(size) + f"push({index}+last()); ", 'int')  # should be changed
 
 
 def set_ref(node):
@@ -66,11 +61,6 @@ def set_ref(node):
     bef_2, expr_value = do(node.children[1])
     return expression(bef_1 + bef_2 + f"stack[{expr_index.value}] = {expr_value.value};  push(0); ",
                       'void')  # unnecessary append
-
-
-def line(node):
-    return expression("cout << '\\n';\n", "system")
-
 
 def cout(node):
     bef = ""
@@ -83,7 +73,7 @@ def cout(node):
     return expression(bef, "void")
 
 
-special_funcs = {"ref": refer, "deref": deref, "dec_arr": declare_array, "set_ref": set_ref, "line": line, "cout": cout}
+special_funcs = {"ref": refer, "deref": deref, "dec_arr": declare_array, "set_ref": set_ref, "cout": cout}
 
 
 def do_function_call(node):
@@ -190,7 +180,13 @@ def parse_body(node):
 
 
 def create_source(program):
-    with open("template.cpp", "r") as template:
+    if getattr(sys, 'frozen', False):
+        # application_path = sys._MEIPASS
+        application_path = os.path.dirname(sys.executable)
+    else:
+        application_path = os.path.dirname(__file__)
+    template_path = os.path.join(application_path, "template.cpp")
+    with open(template_path, "r") as template:
         res = template.read()
     for function in program.children:
         function_name, return_type = function.name
@@ -204,5 +200,6 @@ def create_source(program):
         res += parse_body(Global.functions[function].body)
         assert Global.have_return, f"'{function}' should have explicit return"
         if function == "main":
-            res += "$0:\nmyfile.close();\n}\n"
+            res += "$0:;\n}\n"
+            # res += "$0:\nmyfile.close();\n}\n"
     return res

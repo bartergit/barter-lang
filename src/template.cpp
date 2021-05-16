@@ -35,7 +35,6 @@ ofstream myfile;
 int main(){
 stack_trace[++stack_trace_pointer]=&&$0;
 top_pointer_stack[0] = 0;
-myfile.open("build/log.txt"); // for debugging
 goto main;
 _sum:
 push(pop() + pop());

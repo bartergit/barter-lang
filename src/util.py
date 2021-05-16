@@ -17,7 +17,7 @@ unary_op = namedtuple('unary_op', 'sign')
 
 types = ["int", "bool"]
 operators = ["<=", ">=", "+", "-", "*", "/", "==", "!=", "<", ">", "!"]
-special = ["while", "for", "true", "false", "if", "func"] + types
+special = ["while", "true", "false", "if", "func"] + types
 
 def is_correct_var_name(string):
     return ["A" <= x <= "z" or x == "_" or x.isnumeric() for x in string[1:]].count(True) == len(string) - 1 \
